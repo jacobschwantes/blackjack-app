@@ -353,16 +353,8 @@ export default class Blackjack extends Component {
                 {/* Right column */}
                 <div className="h-screen">
                   {/* Announcements */}
-                  <section aria-labelledby="announcements-title" className="h-5/6">
-                    <div className="rounded-lg bg-white overflow-hidden shadow h-full">
-                      <div className="p-6 h-full">
-                        <h2 className="text-base font-medium text-gray-900" id="announcements-title">
-                          Chat
-                        </h2>
+                  <section aria-labelledby="announcements-title" className="h-4/6">       
                         <Chat/>
-                       
-                      </div>
-                    </div>
                   </section>
     
                 </div>

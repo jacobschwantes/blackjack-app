@@ -77,37 +77,34 @@ export default class Chat extends Component {
 
   render() {
     return (
-      <div className="h-full scrollbar-hide">
-       <div className="h-5/6 overflow-y-scroll scrollbar-hide">
-        <div className=" mx-auto " ref={this.myRef}>
-          {/* loading indicator */}
-          {this.state.loadingChats ? <div className="spinner-border text-success" role="status">
-            <span className="sr-only">Loading...</span>
-          </div> : ""}
-          {/* chat area */}
-          {this.state.chats.map(chat => {
-            return (
-              <div className={" tracking-tight text-white rounded-lg p-2 m-1 max-w-lg break-words" + (this.state.user.uid === chat.uid ? " bg-gray-700 ml-auto" : " bg-gray-700 mr-auto")}>
-                <p className=" text-sm text-white  "><span><img className="mr-2 float-left rounded-full h-5 w-5 object-cover bg-white" alt="" src={chat.profileSrc}></img></span><span className={"font-bold text-xs text-blue-700 bg-gray-100 rounded mr-1 " + (chat.uid === devUID ? "px-1" : null )}>{chat.uid === devUID ? 'dev' : null} </span>{chat.userName}</p>
-                <p className="text-base">{chat.content}</p>
-              </div>
-            )
-          })}
-        </div>
-        </div>
-        <div className="">
-          <div className="bg-white rounded-lg xl:mx-auto">
-            <div>
-              <form onSubmit={this.handleSubmit}>
-                <label for="chat" className="text-gray-700 text-sm font-medium">Send a message</label>
-                <input id="chat" required className="form-control  rounded-lg  w-full  h-14" name="content" onChange={this.handleChange} type="text" value={this.state.content}></input>
-                {this.state.error ? <p className="text-danger">{this.state.error}</p> : null}
-              </form>
-            </div>
+      <div className="rounded-lg bg-white overflow-hidden shadow  p-6 h-full flex flex-col">
+        <h2 className="text-base font-medium text-gray-900" id="announcements-title">
+          Chat
+        </h2>
+        <div className=" overflow-y-scroll scrollbar-hide flex-1">
+          <div className="h-full mx-auto " ref={this.myRef}>
+            {/* loading indicator */}
+            {this.state.loadingChats ? <div className="spinner-border text-success" role="status">
+              <span className="sr-only">Loading...</span>
+            </div> : ""}
+            {/* chat area */}
+            {this.state.chats.map(chat => {
+              return (
+                <div className={" tracking-tight text-white rounded-lg p-2 m-1 max-w-lg break-words" + (this.state.user.uid === chat.uid ? " bg-gray-700 ml-auto" : " bg-gray-700 mr-auto")}>
+                  <p className=" text-sm text-white  "><span><img className="mr-2 float-left rounded-full h-5 w-5 object-cover bg-white" alt="" src={chat.profileSrc}></img></span><span className={"font-bold text-xs text-blue-700 bg-gray-100 rounded mr-1 " + (chat.uid === devUID ? "px-1" : null)}>{chat.uid === devUID ? 'dev' : null} </span>{chat.userName}</p>
+                  <p className="text-base">{chat.content}</p>
+                </div>
+              )
+            })}
           </div>
         </div>
-
+        <form onSubmit={this.handleSubmit}>
+          <label for="chat" className="text-gray-700 text-sm font-medium">Send a message</label>
+          <input id="chat" required className="form-control  rounded-lg  w-full  h-14" name="content" onChange={this.handleChange} type="text" value={this.state.content}></input>
+          {this.state.error ? <p className="text-danger">{this.state.error}</p> : null}
+        </form>
       </div>
+
 
     );
   }
