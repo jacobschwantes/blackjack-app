@@ -32,13 +32,13 @@ export default function Settings(props) {
                             <div className="w-screen max-w-md">
                                 <form className="h-full divide-y divide-gray-200 flex flex-col bg-white shadow-xl" onSubmit={handleSubmit} id="settings-form">
                                     <div className="flex-1 h-0 overflow-y-auto">
-                                        <div className="py-6 px-4 bg-indigo-700 sm:px-6">
+                                        <div className="py-6 px-4 bg-cyan-600 sm:px-6">
                                             <div className="flex items-center justify-between">
                                                 <Dialog.Title className="text-lg font-medium text-white">Settings</Dialog.Title>
                                                 <div className="ml-3 h-7 flex items-center">
                                                     <button
                                                         type="button"
-                                                        className="bg-indigo-700 rounded-md text-indigo-200 hover:text-white focus:outline-none focus:ring-2 focus:ring-white"
+                                                        className="bg-cyan-600 rounded-md text-white hover:text-white focus:outline-none focus:ring-2 focus:ring-white"
                                                         onClick={() => props.update(false)}
                                                     >
                                                         <span className="sr-only">Close panel</span>
@@ -47,7 +47,7 @@ export default function Settings(props) {
                                                 </div>
                                             </div>
                                             <div className="mt-1">
-                                                <p className="text-sm text-indigo-300">
+                                                <p className="text-sm text-white">
                                                     Update your username
                                                 </p>
                                             </div>
@@ -68,7 +68,7 @@ export default function Settings(props) {
                                                                 type="text"
                                                                 name="username"
                                                                 id="username"
-                                                                className="block w-full shadow-sm sm:text-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md"
+                                                                className="block w-full shadow-sm sm:text-sm focus:ring-cyan-500 focus:border-cyan-500 border-gray-300 rounded-md"
                                                             />
                                                         </div>
                                                     </div>
@@ -85,7 +85,7 @@ export default function Settings(props) {
                                                                 placeholder={url}
                                                                 name="url"
                                                                 id="url"
-                                                                className="block w-full shadow-sm sm:text-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md"
+                                                                className="block w-full shadow-sm sm:text-sm focus:ring-cyan-500 focus:border-cyan-500 border-gray-300 rounded-md"
                                                             />
                                                         </div>
                                                     </div>  
@@ -104,7 +104,7 @@ export default function Settings(props) {
                                         </button>
                                         <button
                                             type="submit"
-                                            className="ml-4 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                            className="ml-4 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-cyan-600 hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                                         >
                                             Update
                                         </button>

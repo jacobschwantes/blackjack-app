@@ -12,15 +12,12 @@ export default function ProfileNav (props){
                       {({ open }) => (
                         <>
                           <div>
-                            <Menu.Button className="max-w-xs bg-white rounded-full flex items-center text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500 lg:p-2 lg:rounded-md lg:hover:bg-gray-50">
+                            <Menu.Button className="max-w-xs  rounded-full flex items-center text-sm  lg:p-2 lg:rounded-md">
                               <img
-                                className="rounded-full border-2 border-indigo-700 h-10 w-10 object-cover"
+                                className="rounded-full border-2 border-white-700 h-10 w-10 object-cover"
                                 src={props.user.photoURL}
                                 alt=""
                               />
-                              <p className="hidden ml-3 text-gray-700 text-sm font-medium lg:block">
-                                <span  className="sr-only">Open user menu for </span>{props.user.displayName}
-                              </p>
                               <ChevronDownIcon
                                 className="hidden flex-shrink-0 ml-1 h-5 w-5 text-gray-400 lg:block"
                                 aria-hidden="true"
