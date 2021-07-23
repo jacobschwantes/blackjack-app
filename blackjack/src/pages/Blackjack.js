@@ -17,8 +17,6 @@ import {
   UsersIcon,
   XIcon,
 } from '@heroicons/react/outline'
-import { SearchIcon } from '@heroicons/react/solid'
-import Footer from "../components/Footer";
 const user = {
   name: 'Chelsea Hagon',
   email: 'chelseahagon@example.com',
@@ -145,7 +143,7 @@ export default class Blackjack extends Component {
       stats: [
         { label: 'Hands played', value: 12 },
         { label: 'Wins', value: 4 },
-        { label: 'Loss or Push', value: 2 },
+        { label: 'Blackjacks', value: 2 },
       ]
     };
     this.update = this.update.bind(this);
@@ -344,8 +342,8 @@ export default class Blackjack extends Component {
                   </section>
     
                   {/* Actions panel */}
-                  <section aria-labelledby="quick-links-title">
-                    <div className="rounded-lg bg-gray-200 overflow-hidden shadow divide-y divide-gray-200 sm:divide-y-0 sm:grid sm:grid-cols-2 sm:gap-px">
+                  <section aria-labelledby="quick-links-title" className="h-screen">
+                    <div className="h-2/3 rounded-lg bg-white overflow-hidden shadow divide-y divide-gray-200 sm:divide-y-0 sm:grid sm:grid-cols-2 sm:gap-px ">
                     </div>
                   </section>
                 </div>
@@ -353,7 +351,7 @@ export default class Blackjack extends Component {
                 {/* Right column */}
                 <div className="h-screen">
                   {/* Announcements */}
-                  <section aria-labelledby="announcements-title" className="h-4/6">       
+                  <section aria-labelledby="announcements-title" className="h-5/6">       
                         <Chat/>
                   </section>
     
@@ -362,7 +360,14 @@ export default class Blackjack extends Component {
             </div>
           </main>
         
-        <Footer/>
+          <footer>
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 lg:max-w-7xl">
+          <div className="border-t border-gray-200 py-8 text-sm text-gray-500 text-center sm:text-left">
+            <span className="block sm:inline">&copy; 2021 Blackjack Inc.</span>{' '}
+            <span className="block sm:inline">All rights reserved.</span>
+          </div>
+        </div>
+      </footer>
         </div>
       )
   }

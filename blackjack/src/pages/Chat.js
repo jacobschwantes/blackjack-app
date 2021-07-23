@@ -4,7 +4,7 @@ import { db } from "../services/firebase";
 let Filter = require('bad-words');
 let filter = new Filter();
 let dateFormat = require("dateformat");
-const devUID = 'DTlkEX32dzQkyLXHufyLr8EVYxh1';
+const devUID = 'WL5h3hFpovNgi7Ix3U4iBNFkXkF3';
 export default class Chat extends Component {
   constructor(props) {
     super(props);
@@ -81,8 +81,8 @@ export default class Chat extends Component {
         <h2 className="text-base font-medium text-gray-900" id="announcements-title">
           Chat
         </h2>
-        <div className=" overflow-y-scroll scrollbar-hide flex-1">
-          <div className="h-full mx-auto " ref={this.myRef}>
+        <div ref={this.myRef} className=" overflow-y-scroll scrollbar-hide flex-1">
+          <div className="h-full mx-auto " >
             {/* loading indicator */}
             {this.state.loadingChats ? <div className="spinner-border text-success" role="status">
               <span className="sr-only">Loading...</span>
@@ -91,7 +91,7 @@ export default class Chat extends Component {
             {this.state.chats.map(chat => {
               return (
                 <div className={" tracking-tight text-white rounded-lg p-2 m-1 max-w-lg break-words" + (this.state.user.uid === chat.uid ? " bg-gray-700 ml-auto" : " bg-gray-700 mr-auto")}>
-                  <p className=" text-sm text-white  "><span><img className="mr-2 float-left rounded-full h-5 w-5 object-cover bg-white" alt="" src={chat.profileSrc}></img></span><span className={"font-bold text-xs text-blue-700 bg-gray-100 rounded mr-1 " + (chat.uid === devUID ? "px-1" : null)}>{chat.uid === devUID ? 'dev' : null} </span>{chat.userName}</p>
+                  <p className=" text-sm text-white  "><span><img className="mr-2 float-left rounded-full h-5 w-5 object-cover bg-white" alt="" src={chat.profileSrc}></img></span><span className={"font-bold text-xs text-cyan-500 bg-gray-100 rounded mr-1 " + (chat.uid === devUID ? " px-1" : null)}>{chat.uid === devUID ? 'dev' : null} </span>{chat.userName}</p>
                   <p className="text-base">{chat.content}</p>
                 </div>
               )

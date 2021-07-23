@@ -16,7 +16,7 @@ const navigation = [
 
 export default function Footer() {
   return (
-    <footer className="bg-white py-20 ">
+    <footer className="bg-gray-100">
       <div className="max-w-3/5 mx-auto py-12 sm:px-6 md:flex md:items-center md:justify-between">
         <div className="flex justify-center  md:order-2">
           {navigation.map((item) => (
@@ -27,7 +27,7 @@ export default function Footer() {
           ))}
         </div>
         <div className="mt-8 md:mt-0 md:order-1">
-          <p className="text-center text-base text-gray-400">&copy; 2021 Chatty, Inc. All rights reserved.</p>
+          <p className="text-center text-base text-gray-400">&copy; Blackjack</p>
         </div>
       </div>
     </footer>
