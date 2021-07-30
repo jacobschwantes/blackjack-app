@@ -81,7 +81,7 @@ export default class Chat extends Component {
         <h2 className="text-base font-medium text-gray-900" id="announcements-title">
           Chat
         </h2>
-        <div ref={this.myRef} className=" overflow-y-scroll scrollbar-hide flex-1">
+        <div ref={this.myRef} className=" overflow-y-scroll scrollbar-hide flex-1 rounded-lg">
           <div className="h-full mx-auto " >
             {/* loading indicator */}
             {this.state.loadingChats ? <div className="spinner-border text-success" role="status">

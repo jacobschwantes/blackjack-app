@@ -297,19 +297,19 @@ export default class Blackjack extends Component {
             )}
           </Popover>
           <main className="-mt-24 pb-8">
-            <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:max-w-7xl lg:px-8">
+            <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:max-w-7xl lg:px-8 h-1/6">
               <h1 className="sr-only">Profile</h1>
               {/* Main 3 column grid */}
-              <div className="grid grid-cols-1 gap-4 items-start lg:grid-cols-3 lg:gap-8">
+              <div className="grid grid-cols-1 gap-2 items-start lg:grid-cols-3 lg:gap-5">
                 {/* Left column */}
-                <div className="grid grid-cols-1 gap-4 lg:col-span-2">
+                <div className="grid grid-cols-1 gap-3 lg:col-span-2">
                   {/* Welcome panel */}
-                  <section aria-labelledby="profile-overview-title">
+                  <section aria-labelledby="profile-overview-title" >
                     <div className="rounded-lg bg-white overflow-hidden shadow">
                       <h2 className="sr-only" id="profile-overview-title">
                         Profile Overview
                       </h2>
-                      <div className="bg-white p-6">
+                      <div className="bg-white p-5">
                         <div className="sm:flex sm:items-center sm:justify-between">
                           <div className="sm:flex sm:space-x-5">
                             <div className="flex-shrink-0">
@@ -332,7 +332,7 @@ export default class Blackjack extends Component {
                       </div>
                       <div className="border-t border-gray-200 bg-gray-50 grid grid-cols-1 divide-y divide-gray-200 sm:grid-cols-3 sm:divide-y-0 sm:divide-x">
                         {this.state.stats.map((stat) => (
-                          <div key={stat.label} className="px-6 py-5 text-sm font-medium text-center">
+                          <div key={stat.label} className="px-6 py-4 text-sm font-medium text-center">
                             <span className="text-gray-900">{stat.value}</span>{' '}
                             <span className="text-gray-600">{stat.label}</span>
                           </div>
@@ -343,7 +343,7 @@ export default class Blackjack extends Component {
     
                   {/* Actions panel */}
                   <section aria-labelledby="quick-links-title" className="h-screen">
-                    <div className="h-2/3 rounded-lg bg-white overflow-hidden shadow divide-y divide-gray-200 sm:divide-y-0 sm:grid sm:grid-cols-2 sm:gap-px ">
+                    <div className=" h-2/3 rounded-lg bg-white overflow-hidden shadow divide-y divide-gray-200 sm:divide-y-0 sm:grid sm:grid-cols-2 sm:gap-px ">
                     </div>
                   </section>
                 </div>
