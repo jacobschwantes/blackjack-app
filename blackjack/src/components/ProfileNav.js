@@ -19,7 +19,7 @@ export default function ProfileNav (props){
                                 alt=""
                               />
                               <ChevronDownIcon
-                                className="hidden flex-shrink-0 ml-1 h-5 w-5 text-gray-400 lg:block"
+                                className="hidden flex-shrink-0 ml-1 h-5 w-5 text-white lg:block"
                                 aria-hidden="true"
                               />
                             </Menu.Button>

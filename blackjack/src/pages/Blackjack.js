@@ -78,8 +78,8 @@ const actions = [
     icon: AcademicCapIcon,
     name: 'Training',
     href: '#',
-    iconForeground: 'text-indigo-700',
-    iconBackground: 'bg-indigo-50',
+    iconForeground: 'text-cyan-700',
+    iconBackground: 'bg-cyan-50',
   },
 ]
 const recentHires = [
@@ -375,7 +375,7 @@ export default class Blackjack extends Component {
     
                   {/* Actions panel */}
                   <section aria-labelledby="quick-links-title" className="h-screen">
-                    <div className=" h-2/3 rounded-lg bg-white overflow-hidden shadow divide-y divide-gray-200 sm:divide-y-0 sm:grid sm:grid-cols-2 sm:gap-px ">
+                    <div className=" h-5/6 rounded-lg bg-white overflow-hidden shadow divide-y divide-gray-200 sm:divide-y-0 sm:grid sm:grid-cols-2 sm:gap-px ">
                     </div>
                   </section>
                 </div>
