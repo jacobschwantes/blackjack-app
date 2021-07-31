@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { getUserInfo, writeUserStats } from "../helpers/db";
 import { auth } from "../services/firebase";
 import { db } from "../services/firebase";
 let Filter = require('bad-words');
@@ -11,10 +12,12 @@ export default class Chat extends Component {
     this.state = {
       user: auth().currentUser,
       chats: [],
+      users: [],
       content: '',
       readError: null,
       writeError: null,
       loadingChats: false,
+      loadingUsers: false,
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -25,6 +28,14 @@ export default class Chat extends Component {
     this.setState({ readError: null, loadingChats: true });
     const chatArea = this.myRef.current;
     try {
+      db.ref("users").on("value", snapshot => {
+        let users = [];
+        snapshot.forEach((snap) => {
+          users.push(snap.val());
+        });
+        this.setState({ users });
+        this.setState({ loadingUsers: false });
+      });
       db.ref("chats").on("value", snapshot => {
         let chats = [];
         snapshot.forEach((snap) => {
@@ -35,6 +46,7 @@ export default class Chat extends Component {
         chatArea.scrollBy(0, chatArea.scrollHeight);
         this.setState({ loadingChats: false });
       });
+      
     } catch (error) {
       this.setState({ readError: error.message, loadingChats: false });
     }
@@ -61,6 +73,7 @@ export default class Chat extends Component {
       });
       this.setState({ content: '' });
       chatArea.scrollBy(0, chatArea.scrollHeight);
+      writeUserStats(this.state.user.uid, 10, 10, 10)
     } catch (error) {
       this.setState({ writeError: error.message });
     }
@@ -71,6 +84,7 @@ export default class Chat extends Component {
     const time = dateFormat(now, "mmmm dS, yyyy h:MM TT");
     return time;
   }
+ 
   classNames(...classes) {
     return classes.filter(Boolean).join(' ')
   }
@@ -89,9 +103,10 @@ export default class Chat extends Component {
             </div> : ""}
             {/* chat area */}
             {this.state.chats.map(chat => {
+              let user = this.state.users.find(user => user.uid === chat.uid); 
               return (
-                <div className={" tracking-tight text-white rounded-lg p-2 m-1 max-w-lg break-words" + (this.state.user.uid === chat.uid ? " bg-gray-700 ml-auto" : " bg-gray-700 mr-auto")}>
-                  <p className=" text-sm text-white  "><span><img className="mr-2 float-left rounded-full h-5 w-5 object-cover bg-white" alt="" src={chat.profileSrc}></img></span><span className={"font-bold text-xs text-cyan-500 bg-gray-100 rounded mr-1 " + (chat.uid === devUID ? " px-1" : null)}>{chat.uid === devUID ? 'dev' : null} </span>{chat.userName}</p>
+                <div className=" tracking-tight text-white rounded-lg p-2 m-1 max-w-lg break-words bg-gray-700">
+                  <p className=" text-sm text-white  "><span><img className="mr-1 float-left rounded-full h-5 w-5 object-cover bg-white" alt="" src={user.picture}></img></span><span className={"font-bold text-xs text-cyan-500 bg-gray-100 rounded mr-0.5 " + (chat.uid === devUID ? " px-1" : null)}>{chat.uid === devUID ? 'dev' : null} </span>{user.username}</p>
                   <p className="text-base">{chat.content}</p>
                 </div>
               )

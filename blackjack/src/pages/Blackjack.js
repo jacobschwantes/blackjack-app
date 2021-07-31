@@ -4,6 +4,7 @@ import Settings from "../components/Settings";
 import ProfileNav from "../components/ProfileNav";
 import Modal from "../components/Modal";
 import Chat from "./Chat";
+import { db } from "../services/firebase";
 import { Fragment } from 'react'
 import { Menu, Popover, Transition } from '@headlessui/react'
 import {
@@ -17,6 +18,8 @@ import {
   UsersIcon,
   XIcon,
 } from '@heroicons/react/outline'
+import { getUserInfo, writeUserData } from "../helpers/db";
+import Welcome from "../components/Welcome";
 const user = {
   name: 'Chelsea Hagon',
   email: 'chelseahagon@example.com',
@@ -137,18 +140,50 @@ export default class Blackjack extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      user: auth().currentUser,
+      user: '',
+      url: '',
+      username: auth().displayName,
       open: false,
       modal: true,
       stats: [
-        { label: 'Hands played', value: 12 },
-        { label: 'Wins', value: 4 },
-        { label: 'Blackjacks', value: 2 },
-      ]
+        { label: 'Hands played', value: 0 },
+        { label: 'Wins', value: 0 },
+        { label: 'Blackjacks', value: 0 },
+      ],
+      data: {},
+      readError: null,
     };
     this.update = this.update.bind(this);
     this.closeModal = this.closeModal.bind(this);
+    this.updateUser = this.updateUser.bind(this);
     this.myRef = React.createRef();
+  }
+  componentWillMount() {
+    this.setState({url: auth().currentUser.photoURL, username: auth().currentUser.displayName})
+  }
+  async componentDidMount() {
+    try {
+      db.ref("users/" + this.state.user.uid + "/stats").on("value", snapshot => {
+        let data = snapshot.val();
+        if (data) {
+        this.setState({ stats: [
+          { label: 'Hands played', value: data.hands},
+          { label: 'Wins', value: data.wins },
+          { label: 'Blackjacks', value: data.blackjacks },
+        ]});
+        this.setState({ loadingStats: false });
+      };
+    })
+    }
+    catch (error) {
+      this.setState({readError: error})
+      this.setState({ stats: [
+        { label: 'Hands played', value: 0},
+        { label: 'Wins', value: 0 },
+        { label: 'Blackjacks', value: 0 },
+      ]});
+    }
+    
   }
 
   update(status) {
@@ -158,9 +193,14 @@ export default class Blackjack extends Component {
     this.setState({modal: false})
   }
   async updateUser(name, url) {
+    await writeUserData(auth().currentUser.uid, name, url);
     await auth().currentUser.updateProfile({
       displayName: name,
       photoURL: url
+    });
+    this.setState({
+      url: url,
+      username: name
     })
   }
   classNames(...classes) {
@@ -265,7 +305,7 @@ export default class Blackjack extends Component {
                           <div className="pt-4 pb-2">
                             <div className="flex items-center px-5">
                               <div className="flex-shrink-0">
-                                <img className="h-10 w-10 rounded-full" src={user.imageUrl} alt="" />
+                                <img className="h-10 w-10 rounded-full" src={this.state.url} alt="" />
                               </div>
                               <div className="ml-3 min-w-0 flex-1">
                                 <div className="text-base font-medium text-gray-800 truncate">{user.name}</div>
@@ -311,15 +351,7 @@ export default class Blackjack extends Component {
                       </h2>
                       <div className="bg-white p-5">
                         <div className="sm:flex sm:items-center sm:justify-between">
-                          <div className="sm:flex sm:space-x-5">
-                            <div className="flex-shrink-0">
-                              <img className="mx-auto h-20 w-20 rounded-full object-cover border-2 border-cyan-600" src={this.state.user.photoURL} alt="" />
-                            </div>
-                            <div className="mt-4 text-center sm:mt-0 sm:pt-1 sm:text-left">
-                              <p className="text-sm font-medium text-gray-600">Welcome back,</p>
-                              <p className="text-xl font-bold text-gray-900 sm:text-2xl">{this.state.user.displayName}</p>
-                            </div>
-                          </div>
+                         <Welcome {...this.state}/>
                           <div className="mt-5 flex justify-center sm:mt-0">
                             <a
                               href="#"

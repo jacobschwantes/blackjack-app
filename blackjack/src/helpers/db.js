@@ -1,21 +1,30 @@
 import { db } from "../services/firebase";
 
-export function readChats() {
-  let abc = [];
-  db.ref("cards").on("value", snapshot => {
-    snapshot.forEach(snap => {
-      abc.push(snap.val())
-    });
-    return abc;
+export function writeUserData(userId, name, imageUrl) {
+  return db.ref("users/" + userId).update({
+    username: name,
+    picture : imageUrl,
+    uid: userId
   });
 }
 
-export function writeChats(message) {
-  return db.ref("cards").push({
-    content: message.content,
-    timestamp: message.timestamp,
-    uid: message.uid,
-    profileSrc: message.profileSrc,
-    displayName: message.displayName
+export function writeUserStats(userId, hands, wins, blackjacks) {
+  return db.ref("users/" + userId + "/stats").update({
+    hands: hands,
+    wins : wins,
+    blackjacks: blackjacks
   });
 }
+
+export function getUserInfo(uid) {
+  let userRef = db.ref("users/" + uid);
+  userRef.on('value', (snapshot) => {
+  const data = snapshot.val();
+  return data;
+});
+}
+
+
+
+
+

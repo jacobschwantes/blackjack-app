@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { auth } from '../services/firebase';
 import { signup, signInWithGoogle, signInWithGitHub, signInWithTwitter } from "../helpers/auth";
 import Alert from '../components/Alert';
+import { writeUserData } from '../helpers/db';
 export default class SignUp extends Component {
 
   constructor() {
@@ -34,6 +35,8 @@ export default class SignUp extends Component {
         displayName: this.state.username,
         photoURL: "https://t4.ftcdn.net/jpg/00/64/67/63/360_F_64676383_LdbmhiNM6Ypzb3FM4PPuFP9rHe7ri8Ju.jpg"
       })
+      let user = auth().currentUser;
+      writeUserData(user.uid, user.displayName, user.photoURL)
     } catch (error) {
       this.setState({ error: error.message });
     }
@@ -42,6 +45,8 @@ export default class SignUp extends Component {
    async twitterSignIn() {
       try {
         await signInWithTwitter();
+        let user = auth().currentUser;
+        writeUserData(user.uid, user.displayName, user.photoURL);
       } catch (error) {
         this.setState({ error: error.message });
       }
@@ -51,6 +56,8 @@ export default class SignUp extends Component {
   async googleSignIn() {
     try {
       await signInWithGoogle();
+      let user = auth().currentUser;
+      writeUserData(user.uid, user.displayName, user.photoURL)
     } catch (error) {
       this.setState({ error: error.message });
     }
@@ -59,6 +66,8 @@ export default class SignUp extends Component {
   async githubSignIn() {
     try {
       await signInWithGitHub();
+      let user = auth().currentUser;
+      writeUserData(user.uid, user.displayName, user.photoURL)
     } catch (error) {
       console.log(error)
       this.setState({ error: error.message });

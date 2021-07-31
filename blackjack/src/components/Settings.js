@@ -3,8 +3,8 @@ import { Dialog, Transition } from '@headlessui/react'
 import { XIcon } from '@heroicons/react/outline'
 
 export default function Settings(props) {
-    const [user, setUser] = useState(props.user.displayName);
-    const [url, setUrl] = useState(props.user.photoURL);
+    const [user, setUser] = useState(props.username);
+    const [url, setUrl] = useState(props.url);
     function handleSubmit(e) {
         e.preventDefault();
         props.updateProfile(user, url);
