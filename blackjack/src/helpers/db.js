@@ -24,6 +24,13 @@ export function getUserInfo(uid) {
 });
 }
 
+export function writeDeck(userId, deck_id, timestamp) {
+  return db.ref("users/" + userId + "/deck").update({
+    deck_id: deck_id,
+    last_used: timestamp
+  });
+}
+
 
 
 

@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { getUserInfo, writeUserStats } from "../helpers/db";
+import { writeUserStats } from "../helpers/db";
 import { auth } from "../services/firebase";
 import { db } from "../services/firebase";
 let Filter = require('bad-words');
@@ -46,7 +46,7 @@ export default class Chat extends Component {
         chatArea.scrollBy(0, chatArea.scrollHeight);
         this.setState({ loadingChats: false });
       });
-      
+
     } catch (error) {
       this.setState({ readError: error.message, loadingChats: false });
     }
@@ -84,7 +84,7 @@ export default class Chat extends Component {
     const time = dateFormat(now, "mmmm dS, yyyy h:MM TT");
     return time;
   }
- 
+
   classNames(...classes) {
     return classes.filter(Boolean).join(' ')
   }
@@ -103,7 +103,7 @@ export default class Chat extends Component {
             </div> : ""}
             {/* chat area */}
             {this.state.chats.map(chat => {
-              let user = this.state.users.find(user => user.uid === chat.uid); 
+              let user = this.state.users.find(user => user.uid === chat.uid);
               return (
                 <div className=" tracking-tight text-white rounded-lg p-2 m-1 max-w-lg break-words bg-gray-700">
                   <p className=" text-sm text-white  "><span><img className="mr-1 float-left rounded-full h-5 w-5 object-cover bg-white" alt="" src={user.picture}></img></span><span className={"font-bold text-xs text-cyan-500 bg-gray-100 rounded mr-0.5 " + (chat.uid === devUID ? " px-1" : null)}>{chat.uid === devUID ? 'dev' : null} </span>{user.username}</p>
@@ -115,7 +115,7 @@ export default class Chat extends Component {
         </div>
         <form onSubmit={this.handleSubmit}>
           <label for="chat" className="text-gray-700 text-sm font-medium">Send a message</label>
-          <input id="chat" required className="form-control  rounded-lg  w-full  h-14" name="content" onChange={this.handleChange} type="text" value={this.state.content}></input>
+          <input id="chat" required className="form-control  rounded-lg  w-full  h-14 focus:ring-cyan-500 " name="content" onChange={this.handleChange} type="text" value={this.state.content}></input>
           {this.state.error ? <p className="text-danger">{this.state.error}</p> : null}
         </form>
       </div>

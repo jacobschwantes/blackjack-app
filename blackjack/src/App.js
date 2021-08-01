@@ -6,7 +6,7 @@ import {
   Redirect
 } from "react-router-dom";
 import Home from "./pages/Home";
-import Blackjack from "./pages/Blackjack";
+import Dashboard from "./pages/Dashboard";
 import Signup from "./pages/Signup";
 import Login from "./pages/Login";
 import { auth } from "./services/firebase";
@@ -81,7 +81,7 @@ class App extends Component {
             <PrivateRoute
               path="/blackjack"
               authenticated={this.state.authenticated}
-              component={Blackjack}
+              component={Dashboard}
             />
             <PublicRoute
               path="/signup"
