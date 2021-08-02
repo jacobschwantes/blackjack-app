@@ -10,6 +10,7 @@ import Blackjack from "../components/Blackjack";
 import { checkDeck } from "../helpers/api";
 import Notification from "../components/Notification";
 import { drawCards } from "../helpers/api";
+import { shuffleDeck } from "../helpers/api";
 import {
   BellIcon,
   MenuIcon,
@@ -67,6 +68,7 @@ export default class Dashboard extends Component {
     this.pushCard = this.pushCard.bind(this);
     this.checkScore = this.checkScore.bind(this);
     this.updateNotification = this.updateNotification.bind(this);
+    this.shuffleCards = this.shuffleCards.bind(this);
     this.handleError = this.handleError.bind(this);
     this.myRef = React.createRef();
   }
@@ -118,8 +120,6 @@ export default class Dashboard extends Component {
     })
   }
   checkScore(card) {
-    console.log(card)
-    console.log(card.value)
     if (['KING', 'QUEEN', 'JACK'].includes(card.value)) {
       this.setState(prevState => ({
         soft: (prevState.soft + 10), hard: (prevState.hard + 10)
@@ -138,16 +138,26 @@ export default class Dashboard extends Component {
   }
   async pushCard() {
     let response = await drawCards(this.state.user.uid, this.state.deck_id, 1);
-    this.setState(() => ({
+    if(typeof response.cards !== 'undefined') {
+      this.setState(() => ({
       cards: [...this.state.cards, response.cards[0]]
     }));
     this.setState(() => ({
       cards_remaining: response.remaining
     }));
     this.checkScore(response.cards[0])
+    }
+    else {
+      this.setState({error: 'There was a problem with that request. Please try again.'})
+      this.setState({notification: true})
+    }
+    
   }
 
-
+async shuffleCards() {
+  await shuffleDeck(this.state.deck_id)
+    .then(response => this.setState({cards_remaining: response.remaining}))
+}
 
 
 updateNotification() {
@@ -330,7 +340,7 @@ render() {
               {/* Actions panel */}
               <section aria-labelledby="quick-links-title" className="h-screen w-full">
                 <div className=" h-5/6 rounded-lg bg-white overflow-hidden shadow ">
-                  <Blackjack {...this.state} newCard={this.pushCard} error={this.handleError} />
+                  <Blackjack {...this.state} newCard={this.pushCard} error={this.handleError} shuffle={this.shuffleCards} clear={()=> {this.setState({cards: []})}} />
                 </div>
               </section>
             </div>

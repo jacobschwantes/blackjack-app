@@ -84,7 +84,9 @@ export default class Blackjack extends Component {
             })}
            
       </div>
-       <button className="bg-black text-white rounded p-2 mt-3 " onClick={() => this.props.newCard()}>click me</button>
+       <button className="bg-black text-white rounded p-2 mt-3  mx-1" onClick={() => this.props.newCard()}>draw card</button>
+       <button className="bg-black text-white rounded p-2 mt-3 mx-1" onClick={() => this.props.shuffle()}>shuffle</button>
+       <button className="bg-black text-white rounded p-2 mt-3 mx-1 " onClick={() => this.props.clear()}>clear cards</button> 
        <h1>cards left: {this.props.cards_remaining}</h1>
        <h1>soft score: {this.props.soft}</h1>
        <h1>hard score: {this.props.hard}</h1>

@@ -41,5 +41,5 @@ export async function drawCards(uid, deck_id, count) {
 export async function shuffleDeck(deck_id) {
     return await fetch(`https://deckofcardsapi.com/api/deck/${deck_id}/shuffle/`)
         .then(response => response.json())
-        .then(data => data.success)
+        .then(data => {return data})
 }
