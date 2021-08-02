@@ -30,6 +30,11 @@ export function writeDeck(userId, deck_id, timestamp) {
     last_used: timestamp
   });
 }
+export function updateTimestamp(userId, timestamp) {
+  return db.ref("users/" + userId + "/deck").update({
+    last_used: timestamp
+  });
+}
 
 
 

@@ -114,7 +114,7 @@ export default class Chat extends Component {
           </div>
         </div>
         <form onSubmit={this.handleSubmit}>
-          <label for="chat" className="text-gray-700 text-sm font-medium">Send a message</label>
+          <label className="text-gray-700 text-sm font-medium">Send a message</label>
           <input id="chat" required className="form-control  rounded-lg  w-full  h-14 focus:ring-cyan-500 " name="content" onChange={this.handleChange} type="text" value={this.state.content}></input>
           {this.state.error ? <p className="text-danger">{this.state.error}</p> : null}
         </form>

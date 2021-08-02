@@ -1,7 +1,7 @@
 const navigation = [
   {
     name: 'GitHub',
-    href: 'https://github.com/j-sch23/chat-app',
+    href: 'https://github.com/j-sch23/blackjack-app',
     icon: (props) => (
       <svg fill="currentColor" viewBox="0 0 24 24" {...props}>
         <path
@@ -16,20 +16,20 @@ const navigation = [
 
 export default function Footer() {
   return (
-    <footer className="bg-gray-50">
-      <div className="max-w-3/5 mx-auto py-12 sm:px-6 md:flex md:items-center md:justify-between">
-        <div className="flex justify-center  md:order-2">
-          {navigation.map((item) => (
-            <a key={item.name} target="_blank" rel="noreferrer" href={item.href} className="text-gray-400 hover:text-gray-500">
+    <footer className="bg-gray-100 pb-9">
+          <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 lg:max-w-7xl">
+            <div className="border-t border-gray-200 py-8 text-sm text-gray-500 text-center sm:text-left">
+              <span className="block sm:inline">&copy; 2021 Blackjack Inc.</span>{' '}
+              <span className="block sm:inline">All rights reserved.</span>
+              {navigation.map((item) => (
+            <a key={item.name} target="_blank" rel="noreferrer" href={item.href} className="text-gray-400 hover:text-gray-500 float-right">
               <span className="sr-only">{item.name}</span>
               <item.icon className="h-6 w-6" aria-hidden="true" />
             </a>
           ))}
-        </div>
-        <div className="mt-8 md:mt-0 md:order-1">
-          <p className="text-center text-base text-gray-400">&copy; Blackjack</p>
-        </div>
-      </div>
-    </footer>
+              
+            </div>
+          </div>
+        </footer>
   )
 }

@@ -19,7 +19,23 @@ module.exports = {
         teal: colors.teal,
         cyan: colors.cyan,
         rose: colors.rose,
-      }
+      },
+      keyframes: {
+        'fade-in-right': {
+            '0%': {
+                opacity: '0',
+                transform: 'translateX(20rem)'
+            },
+            '100%': {
+                opacity: '1',
+                transform: 'translateX(0)'
+            },
+        },
+    },
+    animation: {
+        'fade-in-right': 'fade-in-right 0.5s ease-out',
+    }
+
     },
   },
   variants: {
