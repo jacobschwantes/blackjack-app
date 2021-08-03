@@ -11,6 +11,7 @@ import { checkDeck } from "../helpers/api";
 import Notification from "../components/Notification";
 import { drawCards } from "../helpers/api";
 import { shuffleDeck } from "../helpers/api";
+import Form from "../components/Form";
 import {
   BellIcon,
   MenuIcon,
@@ -61,7 +62,8 @@ export default class Dashboard extends Component {
       cards: [],
       cards_remaining: 0,
       soft: 0,
-      hard: 0
+      hard: 0,
+      settings: true
     };
     this.update = this.update.bind(this);
     this.updateUser = this.updateUser.bind(this);
@@ -138,7 +140,7 @@ export default class Dashboard extends Component {
   }
   async pushCard() {
     let response = await drawCards(this.state.user.uid, this.state.deck_id, 1);
-    if(typeof response.cards !== 'undefined') {
+    if(response.cards) {
       this.setState(() => ({
       cards: [...this.state.cards, response.cards[0]]
     }));
@@ -317,12 +319,12 @@ render() {
                     <div className="sm:flex sm:items-center sm:justify-between">
                       <Welcome {...this.state} />
                       <div className="mt-5 flex justify-center sm:mt-0">
-                        <a
-                          href="/"
+                        <button
+                          onClick={() => this.setState({settings: true})}
                           className="flex justify-center items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
                         >
                           View profile
-                        </a>
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -339,8 +341,9 @@ render() {
 
               {/* Actions panel */}
               <section aria-labelledby="quick-links-title" className="h-screen w-full">
-                <div className=" h-5/6 rounded-lg bg-white overflow-hidden shadow ">
-                  <Blackjack {...this.state} newCard={this.pushCard} error={this.handleError} shuffle={this.shuffleCards} clear={()=> {this.setState({cards: []})}} />
+                <div className=" h-5/6 rounded-lg bg-white overflow-hidden shadow p-6">
+                  {this.state.settings ? <Form close={() => this.setState({settings: false})}/> : 
+                  <Blackjack {...this.state} newCard={this.pushCard} error={this.handleError} shuffle={this.shuffleCards} clear={()=> {this.setState(() => ({cards: [], soft: 0, hard: 0}))}} />}
                 </div>
               </section>
             </div>
@@ -348,7 +351,7 @@ render() {
             {/* Right column */}
             <div className="h-screen">
               {/* Announcements */}
-              <section aria-labelledby="announcements-title" className="h-5/6">
+              <section aria-labelledby="announcements-title" className="h-full">
                 <Chat />
               </section>
 

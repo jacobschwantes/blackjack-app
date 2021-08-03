@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-
 export default class Blackjack extends Component {
   constructor(props) {
     super(props);
@@ -9,6 +8,8 @@ export default class Blackjack extends Component {
       player_bust: false,
       dealer_bust: false,
       player_stand: false,
+      modal: true,
+      game_over: true
     };
   }
   /* checkScore(seat){
@@ -73,7 +74,19 @@ export default class Blackjack extends Component {
 
   render() {
     return (
-      <div className="w-full h-full">
+      <div className="w-full h-full relative">
+        {this.state.game_over ? 
+        <div className="w-full h-full z-10  absolute items-center justify-center flex ">
+          <div className="bg-white border-gray-200 border-2 shadow-lg p-4 rounded-lg flex flex-col  items-center justify-center">
+            <h1 className=" text-6xl italic font-bold m-4 text-gray-800  ">Player Wins!</h1>
+            <p className="bold text-2xl">19 - 17</p>
+            <div className="mt-5 w-full flex  justify-center">
+              <button className="inline-flex flex-grow justify-center py-2 mx-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-cyan-600 hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500" onClick={() => this.setState({game_over: false})}>Play again</button>
+              <button className="inline-flex  flex-grow justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-cyan-600 hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500" onClick={() => this.setState({game_over: false})}>Reshuffle</button>
+            </div></div>
+        </div> : null}
+        
+        <div className={(this.state.game_over ? "filter blur-sm" : null) }>
       <div className="flex h-50">
         {this.props.cards.map((card, i) => {
               return (
@@ -84,12 +97,14 @@ export default class Blackjack extends Component {
             })}
            
       </div>
-       <button className="bg-black text-white rounded p-2 mt-3  mx-1" onClick={() => this.props.newCard()}>draw card</button>
-       <button className="bg-black text-white rounded p-2 mt-3 mx-1" onClick={() => this.props.shuffle()}>shuffle</button>
-       <button className="bg-black text-white rounded p-2 mt-3 mx-1 " onClick={() => this.props.clear()}>clear cards</button> 
+      
+       <button disabled={this.state.game_over} className="bg-black text-white rounded p-2 mt-3  mx-1" onClick={() => this.props.newCard()}>draw card</button>
+       <button disabled={this.state.game_over} className="bg-black text-white rounded p-2 mt-3 mx-1" onClick={() => this.props.shuffle()}>shuffle</button>
+       <button disabled={this.state.game_over} className="bg-black text-white rounded p-2 mt-3 mx-1 " onClick={() => this.props.clear()}>clear cards</button> 
        <h1>cards left: {this.props.cards_remaining}</h1>
        <h1>soft score: {this.props.soft}</h1>
        <h1>hard score: {this.props.hard}</h1>
+       </div>
       </div>
     )
   }
