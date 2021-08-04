@@ -86,34 +86,31 @@ export default class Blackjack extends Component {
         </div> : null}
         
         <div className={"h-full w-full" +(this.props.game_over ? " filter blur-sm" : null) }>
-      <div className="h-2/5 flex justify-center mr-20 ">
+      <div className="h-2/5 mt-3 flex justify-center mr-36 ">
         {this.props.dealer.map((card, i) => {
               return (
-                <div key={i} className=" contain animate-fade-in-right -mr-20">
-                  <img alt="card" className=" max-h-full" src={card.image}></img>
+                <div key={i} className=" contain animate-fade-in-right -mr-36">
+                  <img alt="card" className="h-full" src={card.image}></img>
                 </div>
               )
             })}
            
       </div>
-      <h1 className="mx-2 text-center">{this.props.player_hard === 0 ? null : (this.props.dealer_soft !== this.props.dealer_hard && this.props.dealer_soft < 21 ? (this.props.dealer_soft + ' / ' + this.props.dealer_hard) : this.props.dealer_soft === 21 ? this.props.dealer_soft : this.props.dealer_hard )}</h1>
+      <h1 className="mx-2 text-center  text-2xl mt-3">{this.props.player_hard === 0 ? null : (this.props.dealer_soft !== this.props.dealer_hard && this.props.dealer_soft < 21 ? (this.props.dealer_soft + ' / ' + this.props.dealer_hard) : this.props.dealer_soft === 21 ? this.props.dealer_soft : this.props.dealer_hard )}</h1>
       
-      <div className=" h-2/5 flex mt-3 justify-center mr-20">
+      <div className=" h-2/5 flex mt-5 justify-center mr-36">
         {this.props.player.map((card, i) => {
               return (
-                <div key={i} className=" contain animate-fade-in-right -mr-20">
-                  <img alt="card" className=" max-h-full" src={card.image}></img>
+                <div key={i} className=" contain animate-fade-in-right -mr-36">
+                  <img alt="card" className="h-full" src={card.image}></img>
                 </div>
               )
             })}
            
       </div>
-      <h1 className="mx-2 text-center">{this.props.player_hard === 0 ? null : (this.props.player_soft !== this.props.player_hard &&  this.props.player_soft < 21 ? (this.props.player_soft + ' / ' + this.props.player_hard) : this.props.player_soft === 21 ? this.props.player_soft : this.props.player_hard) }</h1>
+      <h1 className="text-center text-2xl mt-3">{this.props.player_hard === 0 ? null : (this.props.player_soft !== this.props.player_hard &&  this.props.player_soft < 21 ? (this.props.player_soft + ' / ' + this.props.player_hard) : this.props.player_soft === 21 ? this.props.player_soft : this.props.player_hard) }</h1>
       <div className="flex mt-5 items-center flex-col">
-        <div className="flex">
-       <h1 className="mx-2">cards left: {this.props.cards_remaining}</h1>
-       </div>
-        <div className="flex w-full absolute bottom-0">
+        <div className="flex w-full absolute bottom-0 mb-2">
        <button disabled={this.props.game_over} className="inline-flex flex-grow justify-center py-2 mx-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-cyan-600 hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500" onClick={() => this.props.newCard('player')}>Hit</button>
        <button disabled={this.props.game_over} className="inline-flex flex-grow justify-center py-2 mx-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-cyan-600 hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500" onClick={() => this.props.shuffle()}>Shuffle</button>
        <button disabled={this.props.game_over} className="inline-flex flex-grow justify-center py-2 mx-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-cyan-600 hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500" onClick={() => this.props.clear()}>Clear</button> 

@@ -227,6 +227,7 @@ classNames(...classes) {
 render() {
   return (
     <div className="min-h-screen bg-gray-100">
+      <Notification {...this.state} close={this.updateNotification} />
       <Settings {...this.state} update={this.update} updateProfile={this.updateUser} />
       <Popover as="header" className="pb-24 bg-gradient-to-r from-sky-800 to-cyan-600">
         {({ open }) => (
@@ -412,7 +413,7 @@ render() {
       </main>
 
       <Footer />
-      <Notification {...this.state} close={this.updateNotification} />
+      
     </div>
   )
 }
