@@ -8,7 +8,6 @@ export default class Blackjack extends Component {
       player_bust: false,
       dealer_bust: false,
       player_stand: false,
-      modal: true,
       game_over: true
     };
   }
@@ -75,35 +74,52 @@ export default class Blackjack extends Component {
   render() {
     return (
       <div className="w-full h-full relative">
-        {this.state.game_over ? 
+        {this.props.game_over ? 
         <div className="w-full h-full z-10  absolute items-center justify-center flex ">
           <div className="bg-white border-gray-200 border-2 shadow-lg p-4 rounded-lg flex flex-col  items-center justify-center">
-            <h1 className=" text-6xl italic font-bold m-4 text-gray-800  ">Player Wins!</h1>
-            <p className="bold text-2xl">19 - 17</p>
+            <h1 className=" text-6xl italic font-bold m-4 text-gray-800 text-center  ">{this.props.player_bust ? 'Dealer' : 'Player'} Wins!</h1>
+            <p className="bold text-2xl">{this.props.player_bust || this.props.dealer_bust ? this.props.dealer_bust ? 'Dealer bust' : 'Player bust' : this.props.player_soft > this.props.player_hard && this.props.player_soft <= 21 ? this.props.player_soft : this.props.player_hard + ' - ' + this.props.dealer_soft > this.props.dealer_hard && this.props.dealer_soft <= 21 ? this.props.dealer_soft : this.props.player_hard}</p>
             <div className="mt-5 w-full flex  justify-center">
-              <button className="inline-flex flex-grow justify-center py-2 mx-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-cyan-600 hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500" onClick={() => this.setState({game_over: false})}>Play again</button>
-              <button className="inline-flex  flex-grow justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-cyan-600 hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500" onClick={() => this.setState({game_over: false})}>Reshuffle</button>
+              <button className="inline-flex flex-grow justify-center py-2 mx-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-cyan-600 hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500" onClick={() => this.props.play()}>Play again</button>
+              <button className="inline-flex  flex-grow justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-cyan-600 hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500" onClick={() => this.props.shuffle()}>Reshuffle</button>
             </div></div>
         </div> : null}
         
-        <div className={(this.state.game_over ? "filter blur-sm" : null) }>
-      <div className="flex h-50">
-        {this.props.cards.map((card, i) => {
+        <div className={"h-full w-full" +(this.props.game_over ? " filter blur-sm" : null) }>
+      <div className="h-2/5 flex justify-center mr-20 ">
+        {this.props.dealer.map((card, i) => {
               return (
-                <div key={i} className={"w-50 h-50 contain animate-fade-in-right" + (i === 0 ? null : " -ml-40") }>
-                  <img alt="card" src={card.image}></img>
+                <div key={i} className=" contain animate-fade-in-right -mr-20">
+                  <img alt="card" className=" max-h-full" src={card.image}></img>
                 </div>
               )
             })}
            
       </div>
+      <h1 className="mx-2 text-center">{this.props.player_hard === 0 ? null : (this.props.dealer_soft !== this.props.dealer_hard && this.props.dealer_soft < 21 ? (this.props.dealer_soft + ' / ' + this.props.dealer_hard) : this.props.dealer_soft === 21 ? this.props.dealer_soft : this.props.dealer_hard )}</h1>
       
-       <button disabled={this.state.game_over} className="bg-black text-white rounded p-2 mt-3  mx-1" onClick={() => this.props.newCard()}>draw card</button>
-       <button disabled={this.state.game_over} className="bg-black text-white rounded p-2 mt-3 mx-1" onClick={() => this.props.shuffle()}>shuffle</button>
-       <button disabled={this.state.game_over} className="bg-black text-white rounded p-2 mt-3 mx-1 " onClick={() => this.props.clear()}>clear cards</button> 
-       <h1>cards left: {this.props.cards_remaining}</h1>
-       <h1>soft score: {this.props.soft}</h1>
-       <h1>hard score: {this.props.hard}</h1>
+      <div className=" h-2/5 flex mt-3 justify-center mr-20">
+        {this.props.player.map((card, i) => {
+              return (
+                <div key={i} className=" contain animate-fade-in-right -mr-20">
+                  <img alt="card" className=" max-h-full" src={card.image}></img>
+                </div>
+              )
+            })}
+           
+      </div>
+      <h1 className="mx-2 text-center">{this.props.player_hard === 0 ? null : (this.props.player_soft !== this.props.player_hard &&  this.props.player_soft < 21 ? (this.props.player_soft + ' / ' + this.props.player_hard) : this.props.player_soft === 21 ? this.props.player_soft : this.props.player_hard) }</h1>
+      <div className="flex mt-5 items-center flex-col">
+        <div className="flex">
+       <h1 className="mx-2">cards left: {this.props.cards_remaining}</h1>
+       </div>
+        <div className="flex w-full absolute bottom-0">
+       <button disabled={this.props.game_over} className="inline-flex flex-grow justify-center py-2 mx-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-cyan-600 hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500" onClick={() => this.props.newCard('player')}>Hit</button>
+       <button disabled={this.props.game_over} className="inline-flex flex-grow justify-center py-2 mx-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-cyan-600 hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500" onClick={() => this.props.shuffle()}>Shuffle</button>
+       <button disabled={this.props.game_over} className="inline-flex flex-grow justify-center py-2 mx-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-cyan-600 hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500" onClick={() => this.props.clear()}>Clear</button> 
+       </div>
+       
+       </div>
        </div>
       </div>
     )

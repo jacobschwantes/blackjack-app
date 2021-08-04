@@ -59,11 +59,19 @@ export default class Dashboard extends Component {
       readError: null,
       notification: false,
       deck_id: '',
-      cards: [],
+      player: [],
+      dealer: [],
       cards_remaining: 0,
-      soft: 0,
-      hard: 0,
-      settings: true
+      player_soft: 0,
+      player_hard: 0,
+      dealer_hard: 0,
+      dealer_soft: 0,
+      player_bust: false,
+      dealer_bust: false,
+      settings: false,
+      error: null,
+      notification_message: null,
+      game_over: true,
     };
     this.update = this.update.bind(this);
     this.updateUser = this.updateUser.bind(this);
@@ -72,6 +80,7 @@ export default class Dashboard extends Component {
     this.updateNotification = this.updateNotification.bind(this);
     this.shuffleCards = this.shuffleCards.bind(this);
     this.handleError = this.handleError.bind(this);
+    this.playGame = this.playGame.bind(this);
     this.myRef = React.createRef();
   }
   async componentDidMount() {
@@ -121,52 +130,94 @@ export default class Dashboard extends Component {
       username: name
     })
   }
-  checkScore(card) {
+  checkScore(player, card) {
     if (['KING', 'QUEEN', 'JACK'].includes(card.value)) {
       this.setState(prevState => ({
-        soft: (prevState.soft + 10), hard: (prevState.hard + 10)
+        [player+'_soft']: (prevState[player+'_soft'] + 10), [player+'_hard']: (prevState[player+'_hard']+ 10)
       }))
     }
     else if (card.value.includes('ACE')) {
+      if(this.state[player+'_soft'] + 11 <= 21) {
       this.setState(prevState => ({
-        soft: (prevState.soft + 11), hard: (prevState.hard + 1)
+        [player+'_soft']: (prevState[player+'_soft'] + 11), [player+'_hard']: (prevState[player+'_hard']+ 1)
       }))
     }
     else {
       this.setState(prevState => ({
-        soft: (prevState.soft + parseInt(card.value)), hard: (prevState.hard + parseInt(card.value))
+        [player+'_soft']: (prevState[player+'_soft'] + 1), [player+'_hard']: (prevState[player+'_hard']+ 1)
+      })) 
+    }
+  }
+    else {
+      this.setState(prevState => ({
+        [player+'_soft']: (prevState[player+'_soft'] + parseInt(card.value)), [player+'_hard']: (prevState[player+'_hard']+ parseInt(card.value))
       }))
     }
   }
-  async pushCard() {
+  async pushCard(player) {
     let response = await drawCards(this.state.user.uid, this.state.deck_id, 1);
     if(response.cards) {
       this.setState(() => ({
-      cards: [...this.state.cards, response.cards[0]]
+      [player]: [...this.state[player], response.cards[0]]
     }));
     this.setState(() => ({
       cards_remaining: response.remaining
     }));
-    this.checkScore(response.cards[0])
+    this.checkScore(player, response.cards[0])
+    if(this.state.player_hard > 21) {
+      this.setState({game_over: true})
+      this.setState({player_bust: true})
+    }
     }
     else {
-      this.setState({error: 'There was a problem with that request. Please try again.'})
-      this.setState({notification: true})
+      this.pushCard(player)
     }
     
   }
 
+  playGame() {
+    this.setState(() => ({
+      game_over: false,
+      player_hard: 0,
+      player_soft: 0,
+      dealer_hard: 0,
+      dealer_soft: 0,
+      player: [],
+      dealer: [],
+      player_bust: false
+    }))
+    this.pushCard('player');
+    this.pushCard('dealer');
+    this.pushCard('player');
+    this.pushCard('dealer');
+  
+  }
+  
 async shuffleCards() {
-  await shuffleDeck(this.state.deck_id)
-    .then(response => this.setState({cards_remaining: response.remaining}))
+  let response = await shuffleDeck(this.state.deck_id)
+    if(response.remaining) {
+      this.setState(() => ({
+      cards_remaining: response.remaining,
+      notification_message: "Cards have been shuffled.",
+      notification: true
+    }))
+    }
+    else {
+      this.setState({error: 'There was a problem with that request. Please try again.'})
+      this.setState({notification: true}) 
+    }
 }
 
 
 updateNotification() {
-  this.setState({ notification: false })
+  this.setState(() => ({ 
+    notification: false,
+    error: null,
+    notification_message: null
+   }))
 }
-handleError() {
-  this.setState({error: 'invalid request'}); 
+handleError(message) {
+  this.setState({error: message}); 
   this.setState({notification: true});
 }
 classNames(...classes) {
@@ -343,7 +394,7 @@ render() {
               <section aria-labelledby="quick-links-title" className="h-screen w-full">
                 <div className=" h-5/6 rounded-lg bg-white overflow-hidden shadow p-6">
                   {this.state.settings ? <Form close={() => this.setState({settings: false})}/> : 
-                  <Blackjack {...this.state} newCard={this.pushCard} error={this.handleError} shuffle={this.shuffleCards} clear={()=> {this.setState(() => ({cards: [], soft: 0, hard: 0}))}} />}
+                  <Blackjack {...this.state} play={this.playGame} newCard={this.pushCard} error={this.handleError} shuffle={this.shuffleCards} clear={()=> {this.setState(() => ({dealer: [], player: [], soft: 0, hard: 0}))}} />}
                 </div>
               </section>
             </div>
@@ -352,7 +403,7 @@ render() {
             <div className="h-screen">
               {/* Announcements */}
               <section aria-labelledby="announcements-title" className="h-full">
-                <Chat />
+                <Chat alert={this.handleError}/>
               </section>
 
             </div>

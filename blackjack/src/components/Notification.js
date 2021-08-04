@@ -28,11 +28,11 @@ export default function Notification(props) {
               <div className="p-4">
                 <div className="flex items-start">
                   <div className="flex-shrink-0">
-                    <CheckCircleIcon className="h-6 w-6 text-red-400" aria-hidden="true" />
+                    <CheckCircleIcon className={"h-6 w-6 " + (props.error ? " text-red-400" : " text-cyan-400")} aria-hidden="true" />
                   </div>
                   <div className="ml-3 w-0 flex-1 pt-0.5">
-                    <p className="text-sm font-medium text-gray-900">Uh oh...</p>
-                    <p className="mt-1 text-sm text-gray-500">{props.error}</p>
+                    <p className="text-sm font-medium text-gray-900">{props.error ? "Uh oh..." : "Success"}</p>
+                    <p className="mt-1 text-sm text-gray-500">{props.error ? props.error : props.notification_message}</p>
                   </div>
                   <div className="ml-4 flex-shrink-0 flex">
                     <button

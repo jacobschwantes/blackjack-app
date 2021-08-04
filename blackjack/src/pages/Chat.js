@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import { writeUserStats } from "../helpers/db";
 import { auth } from "../services/firebase";
 import { db } from "../services/firebase";
 let Filter = require('bad-words');
@@ -64,16 +63,21 @@ export default class Chat extends Component {
     this.setState({ writeError: null });
     const chatArea = this.myRef.current;
     try {
-      await db.ref("chats").push({
+      if(!filter.isProfane(this.state.content)) {
+        await db.ref("chats").push({
         content: filter.clean(this.state.content),
         timestamp: Date.now(),
         uid: this.state.user.uid,
         profileSrc: this.state.user.photoURL,
         userName: this.state.user.displayName
       });
+      }
+      else {
+        this.props.alert('That message contained profanity. It has not been sent.')
+      }
+      
       this.setState({ content: '' });
       chatArea.scrollBy(0, chatArea.scrollHeight);
-      writeUserStats(this.state.user.uid, 10, 10, 10)
     } catch (error) {
       this.setState({ writeError: error.message });
     }
