@@ -393,7 +393,7 @@ render() {
 
               {/* Actions panel */}
               <section aria-labelledby="quick-links-title" className="h-screen w-full">
-                <div className=" h-5/6 rounded-lg bg-white overflow-hidden shadow p-6">
+                <div className=" h-5/6 rounded-lg bg-white overflow-hidden shadow p-4">
                   {this.state.settings ? <Form close={() => this.setState({settings: false})}/> : 
                   <Blackjack {...this.state} play={this.playGame} newCard={this.pushCard} error={this.handleError} shuffle={this.shuffleCards} clear={()=> {this.setState(() => ({dealer: [], player: [], soft: 0, hard: 0}))}} />}
                 </div>
