@@ -17,7 +17,7 @@ import {
   MenuIcon,
   XIcon,
 } from '@heroicons/react/outline'
-import { writeUserData } from "../helpers/db";
+import { endGame, newSession, updateBust, updateScore, writeCard, writeUserData } from "../helpers/db";
 import Welcome from "../components/Welcome";
 import Footer from "../components/Footer";
 const user = {
@@ -59,8 +59,18 @@ export default class Dashboard extends Component {
       readError: null,
       notification: false,
       deck_id: '',
-      player: [],
-      dealer: [],
+      player: [{
+        "image": "https://deckofcardsapi.com/static/img/KH.png",
+        "value": "KING",
+        "suit": "HEARTS",
+        "code": "KH"
+    },],
+      dealer: [{
+        "image": "https://deckofcardsapi.com/static/img/KH.png",
+        "value": "KING",
+        "suit": "HEARTS",
+        "code": "KH"
+    },],
       cards_remaining: 0,
       player_soft: 0,
       player_hard: 0,
@@ -72,6 +82,7 @@ export default class Dashboard extends Component {
       error: null,
       notification_message: null,
       game_over: true,
+      turn: 'player',
     };
     this.update = this.update.bind(this);
     this.updateUser = this.updateUser.bind(this);
@@ -100,7 +111,37 @@ export default class Dashboard extends Component {
       db.ref("users/" + this.state.user.uid + "/deck").on("value", snapshot => {
         let data = snapshot.val();
         checkDeck(this.state.user.uid, data)
-          .then(response => { this.setState({ deck_id: response }) })
+          .then(response => { this.setState(() => ({ deck_id: response })) })
+      })
+      db.ref("users/" + this.state.user.uid + "/session/player_cards").on("value", snapshot => {
+        let player = [];
+        snapshot.forEach((snap) => {
+          player.push(snap.val().card);
+        });
+        this.setState({ player });
+      });
+      db.ref("users/" + this.state.user.uid + "/session/dealer_cards").on("value", snapshot => {
+        let dealer = [];
+        snapshot.forEach((snap) => {
+          dealer.push(snap.val().card);
+        });
+        this.setState({ dealer });
+      });
+      db.ref("users/" + this.state.user.uid + "/session").on("value", snapshot => {
+        let data = snapshot.val();
+        if (data) {
+          this.setState({
+            game_over: data.game_over,
+            dealer_bust: data.dealer_bust,
+            player_bust: data.player_bust,
+            player_soft: data.player_soft,
+            player_hard: data.player_hard,
+            dealer_soft: data.dealer_soft,
+            dealer_hard: data.dealer_hard,
+            turn: data.turn
+          });
+        }; 
+        
       })
     }
     catch (error) {
@@ -130,43 +171,34 @@ export default class Dashboard extends Component {
       username: name
     })
   }
-  checkScore(player, card) {
+  async checkScore(player, card) {
     if (['KING', 'QUEEN', 'JACK'].includes(card.value)) {
-      this.setState(prevState => ({
-        [player+'_soft']: (prevState[player+'_soft'] + 10), [player+'_hard']: (prevState[player+'_hard']+ 10)
-      }))
+      await updateScore(this.state.user.uid, player, (this.state[player + '_soft'] + 10), (this.state[player + '_hard'] + 10))
     }
     else if (card.value.includes('ACE')) {
       if(this.state[player+'_soft'] + 11 <= 21) {
-      this.setState(prevState => ({
-        [player+'_soft']: (prevState[player+'_soft'] + 11), [player+'_hard']: (prevState[player+'_hard']+ 1)
-      }))
+        await updateScore(this.state.user.uid, player, (this.state[player + '_soft'] + 11), (this.state[player + '_hard'] + 1))
     }
     else {
-      this.setState(prevState => ({
-        [player+'_soft']: (prevState[player+'_soft'] + 1), [player+'_hard']: (prevState[player+'_hard']+ 1)
-      })) 
+      await updateScore(this.state.user.uid, player, (this.state[player + '_soft'] + 1), (this.state[player + '_hard'] + 1))
     }
   }
     else {
-      this.setState(prevState => ({
-        [player+'_soft']: (prevState[player+'_soft'] + parseInt(card.value)), [player+'_hard']: (prevState[player+'_hard']+ parseInt(card.value))
-      }))
+     await updateScore(this.state.user.uid, player, (this.state[player + '_soft'] + parseInt(card.value)), (this.state[player + '_hard'] + parseInt(card.value)))
     }
   }
   async pushCard(player) {
     let response = await drawCards(this.state.user.uid, this.state.deck_id, 1);
     if(response.cards) {
-      this.setState(() => ({
-      [player]: [...this.state[player], response.cards[0]]
-    }));
+      await writeCard(this.state.user.uid, player, response.cards[0], this.state[player])
     this.setState(() => ({
       cards_remaining: response.remaining
     }));
+    console.log(this.state.player)
     this.checkScore(player, response.cards[0])
     if(this.state.player_hard > 21) {
-      this.setState({game_over: true})
-      this.setState({player_bust: true})
+      await endGame(this.state.user.uid)
+      await updateBust(this.state.user.uid, true, false)
     }
     }
     else {
@@ -175,17 +207,8 @@ export default class Dashboard extends Component {
     
   }
 
-  playGame() {
-    this.setState(() => ({
-      game_over: false,
-      player_hard: 0,
-      player_soft: 0,
-      dealer_hard: 0,
-      dealer_soft: 0,
-      player: [],
-      dealer: [],
-      player_bust: false
-    }))
+  async playGame() {
+    await newSession(this.state.user.uid)
     this.pushCard('player');
     this.pushCard('dealer');
     this.pushCard('player');

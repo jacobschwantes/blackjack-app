@@ -87,25 +87,25 @@ export default class Blackjack extends Component {
         
         <div className={"h-full w-full" +(this.props.game_over ? " filter blur-sm" : null) }>
       <div className="h-2/5 mt-1 flex justify-center mr-24 ">
-        {this.props.dealer.map((card, i) => {
+        {this.props.player ? this.props.dealer.map((card, i) => {
               return (
                 <div key={i} className=" contain animate-fade-in-right -mr-24">
                   <img alt="card" className="h-full" src={card.image}></img>
                 </div>
               )
-            })}
+            }) : null }
            
       </div>
       <h1 className="mx-2 text-center  text-xl mt-1">{this.props.player_hard === 0 ? null : (this.props.dealer_soft !== this.props.dealer_hard && this.props.dealer_soft < 21 ? (this.props.dealer_soft + ' / ' + this.props.dealer_hard) : this.props.dealer_soft === 21 ? this.props.dealer_soft : this.props.dealer_hard )}</h1>
       
       <div className=" h-2/5 flex mt-1 justify-center mr-24">
-        {this.props.player.map((card, i) => {
+        {this.props.player ? this.props.player.map((card, i) => {
               return (
                 <div key={i} className=" contain animate-fade-in-right -mr-24">
                   <img alt="card" className="h-full" src={card.image}></img>
                 </div>
               )
-            })}
+            }) : null }
            
       </div>
       <h1 className="text-center text-xl mt-3">{this.props.player_hard === 0 ? null : (this.props.player_soft !== this.props.player_hard &&  this.props.player_soft < 21 ? (this.props.player_soft + ' / ' + this.props.player_hard) : this.props.player_soft === 21 ? this.props.player_soft : this.props.player_hard) }</h1>
