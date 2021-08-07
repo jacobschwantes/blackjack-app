@@ -23,7 +23,6 @@ export default class Blackjack extends Component {
      
       <div className="h-2/5 mt-1 flex justify-center mr-24 ">
         {this.props.dealer ? this.props[this.props.turn === 'player' ? 'dealer_hidden' : 'dealer'].map((card, i) => {
-          console.log(this.props.turn)
               return (
                 <div key={i} className=" contain animate-fade-in-right -mr-24">
                   <img alt="card" className="h-full rounded-lg" src={card.image}></img>
@@ -47,9 +46,9 @@ export default class Blackjack extends Component {
       <h1 className="text-center text-xl mt-3">{this.props.player_hard === 0 ? null : (this.props.player_soft !== this.props.player_hard &&  this.props.player_soft < 21 ? (this.props.player_soft + ' / ' + this.props.player_hard) : this.props.player_soft === 21 ? this.props.player_soft : this.props.player_hard) }</h1>
       <div className="flex mt-5 items-center flex-col">
         <div className="flex w-full absolute bottom-0 mb-2">
-       <button disabled={this.props.game_over || this.props.turn === 'dealer'} className="inline-flex flex-grow justify-center py-2 mx-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-cyan-600 hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500" onClick={() => this.props.newCard('player')}>Hit</button>
-       <button disabled={this.props.game_over || this.props.turn === 'dealer'} className="inline-flex flex-grow justify-center py-2 mx-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-cyan-600 hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500" onClick={() => {this.props.stand(); this.props.updateTurn(this.props.user.uid, 'dealer')}}>Stand</button>
-       <button disabled={this.props.game_over || this.props.turn === 'dealer'} className="inline-flex flex-grow justify-center py-2 mx-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-cyan-600 hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500" onClick={() => this.props.play()}>play</button>
+       <button disabled={this.props.game_over || this.props.turn === 'dealer' || this.props.player_bust || this.props.player_hard > 21} className="inline-flex flex-grow justify-center py-2 mx-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-cyan-600 hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500" onClick={() => this.props.newCard('player')}>Hit</button>
+       <button disabled={this.props.game_over || this.props.turn === 'dealer' || this.props.player_bust} className="inline-flex flex-grow justify-center py-2 mx-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-cyan-600 hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500" onClick={() => {this.props.updateTurn(this.props.user.uid, 'dealer'); setTimeout(() => {this.props.stand()}, 1000)}}>Stand</button>
+       <button disabled={this.props.game_over || this.props.turn === 'dealer' || this.props.player_bust} className="inline-flex flex-grow justify-center py-2 mx-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-cyan-600 hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500" onClick={() => this.props.play()}>play</button>
        </div>
        
        </div>

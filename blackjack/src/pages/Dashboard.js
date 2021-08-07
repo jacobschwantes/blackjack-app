@@ -16,7 +16,7 @@ import {
   MenuIcon,
   XIcon,
 } from '@heroicons/react/outline'
-import { endGame, newSession, updateScore, updateTurn, writeCard, writeUserData, writeUserHands, writeUserStats, writeUserWins } from "../helpers/db";
+import { endGame, newSession, updateScore, updateTurn, writeCard, writeUserBlackjack, writeUserData, writeUserHands, writeUserStats, writeUserWins } from "../helpers/db";
 import Welcome from "../components/Welcome";
 import Footer from "../components/Footer";
 const user = {
@@ -205,7 +205,8 @@ export default class Dashboard extends Component {
     }
   }
   async pushCard(player) {
-    let response = await drawCards(this.state.user.uid, this.state.deck_id, 1);
+    if(!this.state.player_bust) {
+ let response = await drawCards(this.state.user.uid, this.state.deck_id, 1);
     if(response.cards) {
       await writeCard(this.state.user.uid, player, response.cards[0], this.state[player])
     this.setState(() => ({
@@ -213,6 +214,10 @@ export default class Dashboard extends Component {
     }));
     let score = await this.checkScore(player, response.cards[0])
     await updateScore(this.state.user.uid, player, (this.state[player + '_soft'] + score[0]), (this.state[player + '_hard'] + score[1]))
+    if(player === 'player' && (this.state.player_hard || this.player_soft) === 21) {
+      await updateTurn(this.state.user.uid, 'dealer');
+      this.stand();
+    }
     if (player === 'dealer' && this.state.dealer.length === 1) {
       if (score[0] === score[1]) {
         this.setState({dealer_hidden_score: score[0]})
@@ -221,11 +226,11 @@ export default class Dashboard extends Component {
         this.setState({dealer_hidden_score: score[0] + ' / ' + score[1]})
       }
     }
-    this.checkScore(player, response.cards[0])
     if(this.state[player + '_hard'] > 21) {
       this.setState({reason: player === 'dealer' ? 'Dealer bust' : 'Player bust'})
       setTimeout(() => {
-        if(player === 'dealer') {
+
+if(player === 'dealer') {
           writeUserWins(this.state.user.uid, (this.state.wins + 1)); 
           writeUserHands(this.state.user.uid, (this.state.hands + 1)) 
         }
@@ -233,20 +238,27 @@ export default class Dashboard extends Component {
           writeUserHands(this.state.user.uid, (this.state.hands + 1))
         }
         endGame(this.state.user.uid, player === 'dealer' ? 'Player' : 'Dealer')
-      }, 500) 
+
+      }, 500)
+        
+      
    
       if(this.state.cards_remaining < 121) {
-        this.shuffleCards()
+        await this.shuffleCards()
       }
     }
     }
     else {
-      this.pushCard(player)
+      await this.pushCard(player)
     }
+
+    }
+   
     
   }
 
   async playGame() {
+    this.setState({player_bust : false})
     await newSession(this.state.user.uid)
     this.setState({dealer_hidden: []})
     await this.pushCard('player');
@@ -257,9 +269,13 @@ export default class Dashboard extends Component {
     this.setState({ dealer_hidden: [...this.state.dealer_hidden, {
       "image": "https://i.pinimg.com/236x/6c/a0/16/6ca016115a894f69dea75cc80f95ad92--game-cards-card-games.jpg",
   } ]});
-  if(this.state.dealer_soft === 21 || this.state.player_soft === 21 ) {
-    this.stand()
-    updateTurn(this.state.user.uid, 'dealer');
+  if(this.state.dealer_soft === 21 || this.state.player_soft === 21 ) { 
+    if(this.state.player_soft === 21) {
+      writeUserBlackjack(this.state.user.uid, (this.state.blackjacks + 1)); 
+    }
+    await updateTurn(this.state.user.uid, 'dealer');
+    setTimeout(() => {this.checkVictor()}, 1000)
+   
   }
   }
   async checkVictor() {
