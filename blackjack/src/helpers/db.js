@@ -8,11 +8,26 @@ export function writeUserData(userId, name, imageUrl) {
   });
 }
 // Update user stats
-export function writeUserStats(userId, hands, wins, blackjacks) {
+export function writeUserHands(userId, hands) {
   return db.ref("users/" + userId + "/stats").update({
     hands: hands,
-    wins : wins,
+  });
+}
+export function writeUserStats(userId) {
+  return db.ref("users/" + userId + "/stats").update({
+    hands: 0,
+    blackjacks: 0,
+    wins: 0
+  });
+}
+export function writeUserBlackjack(userId, blackjacks) {
+  return db.ref("users/" + userId + "/stats").update({
     blackjacks: blackjacks
+  });
+}
+export function writeUserWins(userId, wins) {
+  return db.ref("users/" + userId + "/stats").update({
+    wins : wins
   });
 }
 // Get user data
@@ -49,7 +64,7 @@ export function updateGameStatus(userID, status) {
   })
 }
 // Push drawn card to db
-export function writeCard(userID, seat, card, prev) {
+export function writeCard(userID, seat, card) {
   return db.ref("users/" + userID + "/session/" + seat + "_cards").push({
     card
   })
@@ -68,9 +83,10 @@ export function updateTurn(userID, seat) {
   }) 
 }
 // Update game in progress status to false; ends game
-export function endGame(userID) {
+export function endGame(userID, victor) {
   return db.ref("users/" + userID + "/session").update({
-    game_over : true
+    game_over : true,
+    victor: victor
   }) 
 }
 // Update seats soft and hard score
@@ -92,9 +108,12 @@ export function newSession(userID) {
     player_hard: 0,
     dealer_soft: 0,
     dealer_hard: 0,
-    turn: 'player'
+    turn: 'player',
+    victor: false
   })
 }
+
+
 
 
 
