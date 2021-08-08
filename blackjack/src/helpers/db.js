@@ -69,6 +69,22 @@ export function writeCard(userID, seat, card) {
     card
   })
 }
+export function writeDealerHiddenCard(userID, card) {
+  return db.ref("users/" + userID + "/session/dealer_hidden").push({
+    card
+  })
+}
+export function writeDealerHiddenScore(userID, score) {
+  return db.ref("users/" + userID + "/session").update({
+    dealer_hidden_score: score
+  })
+}
+export function writeReason(userID, reason) {
+  return db.ref("users/" + userID + "/session").update({
+    reason: reason
+  })
+}
+
 // Update player and dealer bust status
 export function updateBust(userID, player, dealer) {
   return db.ref("users/" + userID + "/session").update({
@@ -109,7 +125,10 @@ export function newSession(userID) {
     dealer_soft: 0,
     dealer_hard: 0,
     turn: 'player',
-    victor: false
+    victor: false,
+    dealer_hidden: [],
+    dealer_hidden_score: 0,
+    reason: ''
   })
 }
 

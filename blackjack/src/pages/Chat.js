@@ -109,7 +109,7 @@ export default class Chat extends Component {
             {this.state.chats.map(chat => {
               let user = this.state.users.find(user => user.uid === chat.uid);
               return (
-                <div className=" tracking-tight text-white rounded-lg p-2 m-1 max-w-lg break-words bg-gray-700">
+                <div className=" tracking-tight text-white rounded-lg p-2 m-1 w-full break-words bg-gray-700">
                   <p className=" text-sm text-white  "><span><img className="mr-1 float-left rounded-full h-5 w-5 object-cover bg-white" alt="" src={user.picture}></img></span><span className={"font-bold text-xs text-cyan-500 bg-gray-100 rounded mr-0.5 " + (chat.uid === devUID ? " px-1" : null)}>{chat.uid === devUID ? 'dev' : null} </span>{user.username}</p>
                   <p className="text-base">{chat.content}</p>
                 </div>

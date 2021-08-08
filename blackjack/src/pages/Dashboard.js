@@ -16,9 +16,10 @@ import {
   MenuIcon,
   XIcon,
 } from '@heroicons/react/outline'
-import { endGame, newSession, updateScore, updateTurn, writeCard, writeUserBlackjack, writeUserData, writeUserHands, writeUserStats, writeUserWins } from "../helpers/db";
+import { endGame, newSession, updateScore, updateTurn, writeCard, writeDealerHiddenCard, writeDealerHiddenScore, writeReason, writeUserBlackjack, writeUserData, writeUserHands, writeUserStats, writeUserWins, updateTimestamp } from "../helpers/db";
 import Welcome from "../components/Welcome";
 import Footer from "../components/Footer";
+import { uploadPicture } from "../helpers/storage";
 const user = {
   name: 'Chelsea Hagon',
   email: 'chelseahagon@example.com',
@@ -58,18 +59,6 @@ export default class Dashboard extends Component {
       readError: null,
       notification: false,
       deck_id: '',
-      player: [{
-        "image": "https://deckofcardsapi.com/static/img/KH.png",
-        "value": "KING",
-        "suit": "HEARTS",
-        "code": "KH"
-    },],
-      dealer: [{
-        "image": "https://deckofcardsapi.com/static/img/KH.png",
-        "value": "KING",
-        "suit": "HEARTS",
-        "code": "KH"
-    },],
       dealer_hidden: [],
       dealer_hidden_score : 0,
       cards_remaining: 0,
@@ -88,7 +77,9 @@ export default class Dashboard extends Component {
       reason: '',
       wins: 0,
       hands: 0,
-      blackjacks: 0
+      blackjacks: 0,
+      failed: 0,
+      chat_enabled: true
     };
     this.update = this.update.bind(this);
     this.updateUser = this.updateUser.bind(this);
@@ -140,6 +131,13 @@ export default class Dashboard extends Component {
         });
         this.setState({ dealer });
       });
+      db.ref("users/" + this.state.user.uid + "/session/dealer_hidden").on("value", snapshot => {
+        let dealer_hidden = [];
+        snapshot.forEach((snap) => {
+          dealer_hidden.push(snap.val().card);
+        });
+        this.setState({ dealer_hidden });
+      });
       db.ref("users/" + this.state.user.uid + "/session").on("value", snapshot => {
         let data = snapshot.val();
         if (data) {
@@ -152,11 +150,13 @@ export default class Dashboard extends Component {
             dealer_soft: data.dealer_soft,
             dealer_hard: data.dealer_hard,
             turn: data.turn,
-            victor: data.victor
+            victor: data.victor,
+            dealer_hidden_score: data.dealer_hidden_score,
+            reason: data.reason
           });
         } 
         else { 
-          newSession(this.state.user.uid)
+          this.setState({new_player: true})
         }
         
       })
@@ -177,22 +177,60 @@ export default class Dashboard extends Component {
   update(status) {
     this.setState({ settings: status })
   }
-  async updateUser(name, url) {
-    await writeUserData(auth().currentUser.uid, name, url);
+  async updateUser(name, file) {
+
+    if (file) {
+      if (file.size < 4194304) {
+      let upload = uploadPicture(this.state.user.uid, file)
+      upload.on(
+        (error) => {
+          this.setState({
+            error: error,
+            notification: true
+          })
+        }, 
+        () => {
+          upload.snapshot.ref.getDownloadURL().then((downloadURL) => {
+            writeUserData(this.state.user.uid, name, downloadURL);
+            auth().currentUser.updateProfile({
+              displayName: name,
+              photoURL: downloadURL
+            });
+            this.setState({
+              username: name,
+              url: downloadURL, 
+              notification_message: "Profile has been updated.",
+              notification: true
+            })
+          });
+        }
+      );
+      } else {
+        this.setState({
+          error: 'File size is too large. 4MB Limit.',
+          notification: true
+        })
+      }
+      
+    }
+    else {
+    await writeUserData(auth().currentUser.uid, name, this.state.user.photoURL);
     await auth().currentUser.updateProfile({
-      displayName: name,
-      photoURL: url
+      displayName: name
     });
     this.setState({
-      url: url,
-      username: name
+      username: name,
+      notification_message: "Profile has been updated.",
+      notification: true
     })
+    }
+     
   }
   async checkScore(player, card) {
     if (['KING', 'QUEEN', 'JACK'].includes(card.value)) {
       return [10, 10]
     }
-    else if (card.value.includes('ACE')) {
+    if (card.value.includes('ACE')) {
       if(this.state[player+'_soft'] + 11 <= 21) {
         return [11, 1]
     }
@@ -206,28 +244,34 @@ export default class Dashboard extends Component {
   }
   async pushCard(player) {
     if(!this.state.player_bust) {
- let response = await drawCards(this.state.user.uid, this.state.deck_id, 1);
+ let response = await drawCards(this.state.deck_id, 1);
     if(response.cards) {
+      this.setState({failed: 0})
       await writeCard(this.state.user.uid, player, response.cards[0], this.state[player])
     this.setState(() => ({
       cards_remaining: response.remaining
     }));
     let score = await this.checkScore(player, response.cards[0])
     await updateScore(this.state.user.uid, player, (this.state[player + '_soft'] + score[0]), (this.state[player + '_hard'] + score[1]))
-    if(player === 'player' && (this.state.player_hard || this.player_soft) === 21) {
+    if(player === 'player' && (this.state.player_hard || this.state.player_soft) === 21) {
       await updateTurn(this.state.user.uid, 'dealer');
+      setTimeout(() => {
       this.stand();
+      }, 1000)
+      
     }
     if (player === 'dealer' && this.state.dealer.length === 1) {
       if (score[0] === score[1]) {
-        this.setState({dealer_hidden_score: score[0]})
+       await writeDealerHiddenScore(this.state.user.uid, score[0])
+        
       }
       else {
-        this.setState({dealer_hidden_score: score[0] + ' / ' + score[1]})
+        writeDealerHiddenScore(this.state.user.uid, score[0] + ' / ' + score[1])
       }
     }
     if(this.state[player + '_hard'] > 21) {
-      this.setState({reason: player === 'dealer' ? 'Dealer bust' : 'Player bust'})
+      await updateTurn(this.state.user.uid, 'dealer')
+      await writeReason(this.state.user.uid, player === 'dealer' ? 'Dealer bust' : 'Player bust' )
       setTimeout(() => {
 
 if(player === 'dealer') {
@@ -249,7 +293,16 @@ if(player === 'dealer') {
     }
     }
     else {
-      await this.pushCard(player)
+      this.setState((prevState) => ({
+        failed: prevState.failed + 1
+    }));
+      if(this.state.failed <= 3){
+        await this.pushCard(player)
+      } 
+      else {
+        this.setState({error: 'There was a problem with that request. Please try again later.'})
+        this.setState({notification: true}) 
+      }
     }
 
     }
@@ -258,24 +311,24 @@ if(player === 'dealer') {
   }
 
   async playGame() {
+    this.setState({new_player: false})
+    await updateTimestamp(this.state.user.uid, Date.now())
     this.setState({player_bust : false})
     await newSession(this.state.user.uid)
-    this.setState({dealer_hidden: []})
     await this.pushCard('player');
     await this.pushCard('dealer');
-    this.setState({ dealer_hidden: [...this.state.dealer_hidden, this.state.dealer[0] ]})
+    await writeDealerHiddenCard(this.state.user.uid, this.state.dealer[0]);
     await this.pushCard('player');
     await this.pushCard('dealer');
-    this.setState({ dealer_hidden: [...this.state.dealer_hidden, {
+    await writeDealerHiddenCard(this.state.user.uid, {
       "image": "https://i.pinimg.com/236x/6c/a0/16/6ca016115a894f69dea75cc80f95ad92--game-cards-card-games.jpg",
-  } ]});
+  });
   if(this.state.dealer_soft === 21 || this.state.player_soft === 21 ) { 
     if(this.state.player_soft === 21) {
       writeUserBlackjack(this.state.user.uid, (this.state.blackjacks + 1)); 
     }
     await updateTurn(this.state.user.uid, 'dealer');
     setTimeout(() => {this.checkVictor()}, 1000)
-   
   }
   }
   async checkVictor() {
@@ -293,7 +346,7 @@ if(player === 'dealer') {
     else {
       playerTrueScore = this.state.dealer_hard
     };
-    this.setState({ reason: playerTrueScore + ' - ' + dealerTrueScore});
+    await writeReason(this.state.user.uid, playerTrueScore + ' - ' + dealerTrueScore)
     setTimeout(() => {
       if(playerTrueScore > dealerTrueScore) {
         writeUserWins(this.state.user.uid, (this.state.wins + 1)); 
@@ -350,7 +403,7 @@ classNames(...classes) {
 
 render() {
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className=" bg-gray-100 ">
       <Popover as="header" className="pb-24 bg-gradient-to-r from-sky-800 to-cyan-600">
         {({ open }) => (
           <>
@@ -476,13 +529,14 @@ render() {
           </>
         )}
       </Popover>
-      <main className="-mt-24 pb-8">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:max-w-7xl lg:px-8 h-1/6">
-          <h1 className="sr-only">Profile</h1>
+      <main className="-mt-24 h-screen ">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:max-w-7xl lg:px-8 h-full">
+         
           {/* Main 3 column grid */}
-          <div className="grid grid-cols-1 gap-2 items-start lg:grid-cols-3 lg:gap-5">
+          <div className={"h-full grid grid-cols-1 gap-2 items-start lg:gap-5 " + (this.state.chat_enabled ? "lg:grid-cols-3" : "lg:grid-cols-2")}>
             {/* Left column */}
-            <div className="grid grid-cols-1 gap-3 lg:col-span-2">
+            <div className="grid grid-cols-1 lg:col-span-2 h-full">
+              <div className="flex flex-col h-full w-full">
               {/* Welcome panel */}
               <section aria-labelledby="profile-overview-title" >
                 <div className="rounded-lg bg-white overflow-hidden shadow">
@@ -514,27 +568,31 @@ render() {
               </section>
 
               {/* Actions panel */}
-              <section aria-labelledby="quick-links-title" className="h-screen w-full">
-                <div className=" h-5/6 rounded-lg bg-white overflow-hidden shadow p-4">
+              <section aria-labelledby="quick-links-title" className=" h-full py-4 ">
+                <div className=" rounded-lg bg-white overflow-hidden shadow p-4  h-full">
                   {this.state.settings ? <Form {...this.state} updateProfile={this.updateUser} close={() => this.setState({settings: false})}/> : 
                   <Blackjack {...this.state} play={this.playGame} newCard={this.pushCard} error={this.handleError} shuffle={this.shuffleCards} stand={this.stand} updateTurn={updateTurn} />}
                 </div>
               </section>
+              </div>
             </div>
 
             {/* Right column */}
-            <div className="h-screen">
+            <div className="h-screen pb-4">
               {/* Announcements */}
               <section aria-labelledby="announcements-title" className="h-full">
-                <Chat alert={this.handleError}/>
+                {this.state.chat_enabled ? <Chat alert={this.handleError}/> : null}
               </section>
 
             </div>
+            
           </div>
+          
         </div>
+        <Footer />
       </main>
       <Notification {...this.state} close={this.updateNotification} />
-      <Footer />
+      
       
     </div>
   )

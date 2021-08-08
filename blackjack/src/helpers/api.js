@@ -1,4 +1,4 @@
-import { updateTimestamp, writeDeck } from "./db";
+import { writeDeck } from "./db";
 export async function checkDeck(uid, data) {
     // checks if deck node exists in db
     if (data) {
@@ -26,8 +26,7 @@ export async function checkDeck(uid, data) {
     }
 }
 
-export async function drawCards(uid, deck_id, count) {
-    updateTimestamp(uid, Date.now())
+export async function drawCards(deck_id, count) {
     return await fetch(`https://deckofcardsapi.com/api/deck/${deck_id}/draw/?count=${count}`,{ 
     headers : { 
         'Content-Type': 'application/json',
