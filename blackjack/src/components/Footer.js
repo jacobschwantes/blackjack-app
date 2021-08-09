@@ -16,21 +16,21 @@ const navigation = [
 
 export default function Footer() {
   return (
-    <footer className="bg-gray-50 ">
-          <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 lg:max-w-7xl">
-            <div className="border-t border-gray-200 py-8 text-sm text-gray-500 text-center sm:text-left">
-              <span className="block sm:inline">&copy; 2021 Blackjack Inc.</span>{' '}
-              <span className="block sm:inline">All rights reserved.</span>
-              
-              {navigation.map((item) => (
-            <a key={item.name} target="_blank" rel="noreferrer" href={item.href} className="text-gray-400 hover:text-gray-500  inline-block lg:float-right lg:relative ">
+    <footer className="bg-gray-50 dark:bg-gray-900">
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 lg:max-w-7xl">
+        <div className="border-t border-gray-200 dark:border-gray-600 py-8 text-sm text-gray-500 dark:text-gray-400 text-center sm:text-left">
+          <span className="block sm:inline">&copy; 2021 Blackjack Inc.</span>{' '}
+          <span className="block sm:inline">All rights reserved.</span>
+
+          {navigation.map((item) => (
+            <a key={item.name} target="_blank" rel="noreferrer" href={item.href} className="text-gray-500 dark:text-gray-400 dark:hover:text-gray-50 hover:text-gray-500  inline-block lg:float-right lg:relative md:float-right sm:float-right">
               <span className="sr-only">{item.name}</span>
               <item.icon className="h-6 w-6" aria-hidden="true" />
             </a>
           ))}
-              
-            </div>
-          </div>
-        </footer>
+
+        </div>
+      </div>
+    </footer>
   )
 }

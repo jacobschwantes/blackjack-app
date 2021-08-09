@@ -1,18 +1,13 @@
-import React, { Component } from "react";
-import { auth } from "../services/firebase";
+import React, { Component, Fragment } from "react";
+import { auth, db } from "../services/firebase";
 import ProfileNav from "../components/ProfileNav";
 import Chat from "./Chat";
-import { db } from "../services/firebase";
-import { Fragment } from 'react'
 import { Popover, Transition } from '@headlessui/react'
 import Blackjack from "../components/Blackjack";
-import { checkDeck } from "../helpers/api";
+import { checkDeck, drawCards, shuffleDeck } from "../helpers/api";
 import Notification from "../components/Notification";
-import { drawCards } from "../helpers/api";
-import { shuffleDeck } from "../helpers/api";
 import Form from "../components/Form";
 import {
-  BellIcon,
   MenuIcon,
   XIcon,
 } from '@heroicons/react/outline'
@@ -20,28 +15,14 @@ import { endGame, newSession, updateScore, updateTurn, writeCard, writeDealerHid
 import Welcome from "../components/Welcome";
 import Footer from "../components/Footer";
 import { uploadPicture } from "../helpers/storage";
-const user = {
-  name: 'Chelsea Hagon',
-  email: 'chelseahagon@example.com',
-  role: 'Human Resources Manager',
-  imageUrl:
-    'https://images.unsplash.com/photo-1550525811-e5869dd03032?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-}
-const userNavigation = [
-  { name: 'Your Profile', href: '#' },
-  { name: 'Settings', href: '#' },
-  { name: 'Sign out', href: '#' },
-]
-
-
 
 export default class Dashboard extends Component {
   constructor(props) {
     super(props);
     this.state = {
       user: auth().currentUser,
-      url: auth().currentUser.photoURL,
-      username: auth().currentUser.displayName,
+      url: 'loading.jpg',
+      username: 'Loading',
       open: false,
       modal: true,
       stats: [
@@ -73,7 +54,8 @@ export default class Dashboard extends Component {
       blackjacks: 0,
       failed: 0,
       chat_enabled: true,
-      mobile_open: false
+      mobile_open: false,
+      dark: true
     };
     this.update = this.update.bind(this);
     this.updateUser = this.updateUser.bind(this);
@@ -104,6 +86,16 @@ export default class Dashboard extends Component {
           });
         } else {
           writeUserStats(this.state.user.uid)
+        }
+      })
+      db.ref("users/" + this.state.user.uid).on("value", snapshot => {
+        let data = snapshot.val();
+        if (data) {
+          this.setState({
+            dark: data.dark_mode,
+            username: data.username,
+            url: data.picture
+          });
         }
       })
       db.ref("users/" + this.state.user.uid + "/deck").on("value", snapshot => {
@@ -171,7 +163,7 @@ export default class Dashboard extends Component {
   update(status) {
     this.setState(() => ({ settings: status, mobile_open: false }))
   }
-  async updateUser(name, file) {
+  async updateUser(name, file, darkMode) {
 
     if (file) {
       if (file.size < 4194304) {
@@ -185,7 +177,7 @@ export default class Dashboard extends Component {
           },
           () => {
             upload.snapshot.ref.getDownloadURL().then((downloadURL) => {
-              writeUserData(this.state.user.uid, name, downloadURL);
+              writeUserData(this.state.user.uid, name, downloadURL, darkMode);
               auth().currentUser.updateProfile({
                 displayName: name,
                 photoURL: downloadURL
@@ -208,12 +200,11 @@ export default class Dashboard extends Component {
 
     }
     else {
-      await writeUserData(auth().currentUser.uid, name, this.state.user.photoURL);
+      await writeUserData(auth().currentUser.uid, name, this.state.user.photoURL, darkMode);
       await auth().currentUser.updateProfile({
         displayName: name
       });
       this.setState({
-        username: name,
         notification_message: "Profile has been updated.",
         notification: true
       })
@@ -298,10 +289,7 @@ export default class Dashboard extends Component {
           this.setState({ notification: true })
         }
       }
-
     }
-
-
   }
 
   async playGame() {
@@ -397,190 +385,192 @@ export default class Dashboard extends Component {
 
   render() {
     return (
-      <div className=" bg-gray-50 ">
-        <Popover as="header" className=" pb-24 bg-gradient-to-r from-sky-800 to-cyan-600">
-          {({ open }) => (
-            <>
-              <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:max-w-7xl lg:px-8">
-                <div className="relative flex flex-wrap items-center justify-center lg:justify-between">
-                  {/* Logo */}
-                  <div className="absolute left-0 py-1 top-0 flex-shrink-0 lg:static">
-                    <a href="/">
-                      <h1 className="text-3xl tracking-tight font-extrabold sm:text-4xl md:text-4xl lg:text-5xl xl:text-5xl text-white xl:inline ">Blackjack</h1>
-                    </a>
-                  </div>
+      <div className={this.state.dark ? "dark" : null}>
+        <div className=" bg-gray-50 dark:bg-gray-900" >
+          <Popover as="header" className=" pb-24 bg-gradient-to-r from-sky-800 to-cyan-600">
+            {({ open }) => (
+              <>
+                <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:max-w-7xl lg:px-8">
+                  <div className="relative flex flex-wrap items-center justify-center lg:justify-between">
+                    {/* Logo */}
+                    <div className="absolute left-0 py-1 top-0 flex-shrink-0 lg:static">
+                      <a href="/">
+                        <h1 className="text-3xl tracking-tight font-extrabold sm:text-4xl md:text-4xl lg:text-5xl xl:text-5xl text-white dark:text-gray-50 xl:inline ">Blackjack</h1>
+                      </a>
+                    </div>
 
-                  {/* Right section on desktop */}
-                  <div className="hidden lg:ml-4 lg:flex lg:items-center lg:py-5 lg:pr-0.5">
+                    {/* Right section on desktop */}
+                    <div className="hidden lg:ml-4 lg:flex lg:items-center lg:py-5 lg:pr-0.5">
 
-                    {/* Profile dropdown */}
-                    <ProfileNav {...this.state} update={this.update} />
-                  </div>
+                      {/* Profile dropdown */}
+                      <ProfileNav {...this.state} update={this.update} />
+                    </div>
 
-                  {/* Menu button */}
-                  <div className="absolute right-0 top-1 flex-shrink-0 lg:hidden">
-                    {/* Mobile menu button */}
-                    <Popover.Button  className="bg-transparent p-2 rounded-md inline-flex items-center justify-center text-white hover:text-white hover:bg-white hover:bg-opacity-10 focus:outline-none focus:ring-2 focus:ring-white">
-                      <span className="sr-only">Open main menu</span>
-                      {this.state.mobile_open ? (
-                        <XIcon className="block h-6 w-6" aria-hidden="true" />
-                      ) : (
-                        <MenuIcon className="block h-6 w-6" aria-hidden="true" onClick={() => this.setState({mobile_open: true})}/>
-                      )}
-                    </Popover.Button>
+                    {/* Menu button */}
+                    <div className="absolute right-0 top-1 flex-shrink-0 lg:hidden">
+                      {/* Mobile menu button */}
+                      <Popover.Button className="bg-transparent p-2 rounded-md inline-flex items-center justify-center text-white dark:text-gray-50 hover:text-white hover:bg-white hover:bg-opacity-10 focus:outline-none focus:ring-2 focus:ring-white ">
+                        <span className="sr-only">Open main menu</span>
+                        {this.state.mobile_open ? (
+                          <XIcon className="block h-6 w-6" aria-hidden="true" />
+                        ) : (
+                          <MenuIcon className="block h-6 w-6" aria-hidden="true" onClick={() => this.setState({ mobile_open: true })} />
+                        )}
+                      </Popover.Button>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <Transition.Root show={this.state.mobile_open} as={Fragment}>
-                <div className="lg:hidden">
-                  <Transition.Child
-                    as={Fragment}
-                    enter="duration-150 ease-out"
-                    enterFrom="opacity-0"
-                    enterTo="opacity-100"
-                    leave="duration-150 ease-in"
-                    leaveFrom="opacity-100"
-                    leaveTo="opacity-0"
-                  >
-                    <Popover.Overlay static className="z-20 fixed inset-0 bg-black bg-opacity-25" />
-                  </Transition.Child>
-
-                  <Transition.Child
-                    as={Fragment}
-                    enter="duration-150 ease-out"
-                    enterFrom="opacity-0 scale-95"
-                    enterTo="opacity-100 scale-100"
-                    leave="duration-150 ease-in"
-                    leaveFrom="opacity-100 scale-100"
-                    leaveTo="opacity-0 scale-95"
-                  >
-                    <Popover.Panel
-                      focus
-                      static
-                      className="z-30 absolute top-0 inset-x-0 max-w-3xl mx-auto w-full p-2 transition transform origin-top"
+                <Transition.Root show={this.state.mobile_open} as={Fragment}>
+                  <div className="lg:hidden">
+                    <Transition.Child
+                      as={Fragment}
+                      enter="duration-150 ease-out"
+                      enterFrom="opacity-0"
+                      enterTo="opacity-100"
+                      leave="duration-150 ease-in"
+                      leaveFrom="opacity-100"
+                      leaveTo="opacity-0"
                     >
-                      <div className="rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 bg-white  divide-gray-200">
+                      <Popover.Overlay static className="z-20 fixed inset-0 bg-black bg-opacity-25" />
+                    </Transition.Child>
 
-                        <div className="pt-4 pb-2">
+                    <Transition.Child
+                      as={Fragment}
+                      enter="duration-150 ease-out"
+                      enterFrom="opacity-0 scale-95"
+                      enterTo="opacity-100 scale-100"
+                      leave="duration-150 ease-in"
+                      leaveFrom="opacity-100 scale-100"
+                      leaveTo="opacity-0 scale-95"
+                    >
+                      <Popover.Panel
+                        focus
+                        static
+                        className="z-30 absolute top-0 inset-x-0 max-w-3xl mx-auto w-full p-2 transition transform origin-top"
+                      >
+                        <div className="rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 bg-white dark:bg-gray-800  divide-gray-200">
+
+                          <div className="pt-4 pb-2">
 
 
-                          <div className="flex items-center px-5">
+                            <div className="flex items-center px-5">
 
-                            <div className="flex-shrink-0">
-                              <img className="h-10 w-10 rounded-full" src={this.state.url} alt="" />
+                              <div className="flex-shrink-0">
+                                <img className="h-10 w-10 rounded-full" src={this.state.url} alt="" />
+                              </div>
+                              <div className="ml-3 min-w-0 flex-1">
+                                <div className="text-base font-medium text-gray-800 dark:text-gray-50 truncate">{this.state.username}</div>
+                                <div className="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">{this.state.user.email}</div>
+                              </div>
+
+                              <Popover.Button className="bg-white dark:bg-gray-800 rounded-md p-2 inline-flex items-center justify-center text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-cyan-500">
+                                <span className="sr-only">Close menu</span>
+                                <XIcon onClick={() => { this.setState({ mobile_open: false }) }} className="h-6 w-6" aria-hidden="true" />
+                              </Popover.Button>
+
                             </div>
-                            <div className="ml-3 min-w-0 flex-1">
-                              <div className="text-base font-medium text-gray-800 truncate">{this.state.username}</div>
-                              <div className="text-sm font-medium text-gray-500 truncate">{this.state.user.email}</div>
+                            <div className="mt-3 px-2 space-y-1">
+
+                              <button
+
+                                key="view_profile"
+                                onClick={() => this.update(true)}
+                                className="block rounded-md px-3 py-2 text-base text-gray-900 dark:text-gray-50 font-medium hover:bg-gray-100 hover:text-gray-800"
+                              >
+                                View profile
+                              </button>
+                              <button
+                                key="settings"
+                                onClick={() => this.update(true)}
+                                className="block rounded-md px-3 py-2 text-base text-gray-900 dark:text-gray-50 font-medium hover:bg-gray-100 hover:text-gray-800"
+                              >
+                                Settings
+                              </button>
+                              <button
+                                onClick={() => auth().signOut()}
+                                key="sign_out"
+                                className="block rounded-md px-3 py-2 text-base text-gray-900 dark:text-gray-50 font-medium hover:bg-gray-100 hover:text-gray-800"
+                              >
+                                Sign out
+                              </button>
+
                             </div>
-
-                            <Popover.Button  className="bg-white rounded-md p-2 inline-flex items-center justify-center text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-cyan-500">
-                              <span className="sr-only">Close menu</span>
-                              <XIcon onClick={() => {this.setState({mobile_open: false})}} className="h-6 w-6" aria-hidden="true" />
-                            </Popover.Button>
-
-                          </div>
-                          <div className="mt-3 px-2 space-y-1">
-
-                            <button
-
-                              key="view_profile"
-                              onClick={() => this.update(true)}
-                              className="block rounded-md px-3 py-2 text-base text-gray-900 font-medium hover:bg-gray-100 hover:text-gray-800"
-                            >
-                              View profile
-                            </button>
-                            <button
-                              key="settings"
-                              onClick={() => this.update(true)}
-                              className="block rounded-md px-3 py-2 text-base text-gray-900 font-medium hover:bg-gray-100 hover:text-gray-800"
-                            >
-                              Settings
-                            </button>
-                            <button
-                              onClick={() => auth().signOut()}
-                              key="sign_out"
-                              className="block rounded-md px-3 py-2 text-base text-gray-900 font-medium hover:bg-gray-100 hover:text-gray-800"
-                            >
-                              Sign out
-                            </button>
-
                           </div>
                         </div>
-                      </div>
-                    </Popover.Panel>
-                  </Transition.Child>
-                </div>
-              </Transition.Root>
-            </>
-          )}
-        </Popover>
-        <main className="-mt-24 min-h-screen ">
-          <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:max-w-7xl lg:px-8 h-full">
+                      </Popover.Panel>
+                    </Transition.Child>
+                  </div>
+                </Transition.Root>
+              </>
+            )}
+          </Popover>
+          <main className="-mt-24 min-h-screen ">
+            <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:max-w-7xl lg:px-8 h-full">
 
-            {/* Main 3 column grid */}
-            <div className={"h-full lg:mt-0 mt-14 grid grid-cols-1 gap-1 items-start lg:gap-5 " + (this.state.chat_enabled ? "lg:grid-cols-3" : "lg:grid-cols-2")}>
-              {/* Left column */}
-              <div className="grid grid-cols-1 lg:col-span-2 h-full">
-                <div className="flex flex-col h-full w-full">
-                  {/* Welcome panel */}
-                  <section aria-labelledby="profile-overview-title" >
-                    <div className="rounded-lg bg-white overflow-hidden shadow">
-                      <h2 className="sr-only" id="profile-overview-title">
-                        Profile Overview
-                      </h2>
-                      <div className="bg-white p-5">
-                        <div className="sm:flex sm:items-center sm:justify-between">
-                          <Welcome {...this.state} />
-                          <div className="mt-5 flex justify-center sm:mt-0">
-                            <button
-                              onClick={() => this.setState({ settings: true })}
-                              className="flex justify-center items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
-                            >
-                              View profile
-                            </button>
+              {/* Main 3 column grid */}
+              <div className={"h-full lg:mt-0 mt-14 grid grid-cols-1 gap-1 items-start lg:gap-5 " + (this.state.chat_enabled ? "lg:grid-cols-3" : "lg:grid-cols-2")}>
+                {/* Left column */}
+                <div className="grid grid-cols-1 lg:col-span-2 h-full">
+                  <div className="flex flex-col h-full w-full">
+                    {/* Welcome panel */}
+                    <section aria-labelledby="profile-overview-title" >
+                      <div className="rounded-lg bg-white dark:bg-gray-900 overflow-hidden shadow">
+                        <h2 className="sr-only" id="profile-overview-title">
+                          Profile Overview
+                        </h2>
+                        <div className="bg-white dark:bg-gray-800 p-5">
+                          <div className="sm:flex sm:items-center sm:justify-between">
+                            <Welcome {...this.state} />
+                            <div className="mt-5 flex justify-center sm:mt-0">
+                              <button
+                                onClick={() => this.setState({ settings: true })}
+                                className="flex justify-center items-center px-4 py-2 border border-gray-300 dark:border-gray-500 shadow-sm text-sm font-medium rounded-md text-gray-700 dark:text-gray-50 bg-white dark:bg-gray-600 hover:bg-gray-50"
+                              >
+                                View profile
+                              </button>
+                            </div>
                           </div>
                         </div>
+                        <div className="border-t border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 grid grid-cols-1 divide-y divide-gray-200 dark:divide-gray-600 sm:grid-cols-3 sm:divide-y-0 sm:divide-x">
+                          {this.state.stats.map((stat) => (
+                            <div key={stat.label} className="px-6 py-4 text-sm font-medium text-center">
+                              <span className="text-gray-900 dark:text-gray-50">{stat.value}</span>{' '}
+                              <span className="text-gray-600 dark:text-gray-300">{stat.label}</span>
+                            </div>
+                          ))}
+                        </div>
                       </div>
-                      <div className="border-t border-gray-200 bg-gray-50 grid grid-cols-1 divide-y divide-gray-200 sm:grid-cols-3 sm:divide-y-0 sm:divide-x">
-                        {this.state.stats.map((stat) => (
-                          <div key={stat.label} className="px-6 py-4 text-sm font-medium text-center">
-                            <span className="text-gray-900">{stat.value}</span>{' '}
-                            <span className="text-gray-600">{stat.label}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </section>
+                    </section>
 
-                  {/* Actions panel */}
-                  <section aria-labelledby="quick-links-title" className="lg:h-full h-screen  py-4 ">
-                    <div className=" rounded-lg bg-white overflow-hidden shadow py-4  h-full">
-                      {this.state.settings ? <Form {...this.state} updateProfile={this.updateUser} close={() => this.setState({ settings: false })} /> :
-                        <Blackjack {...this.state} play={this.playGame} newCard={this.pushCard} error={this.handleError} shuffle={this.shuffleCards} stand={this.stand} updateTurn={updateTurn} />}
-                    </div>
-                  </section>
+                    {/* Actions panel */}
+                    <section aria-labelledby="quick-links-title" className="lg:h-full h-screen  py-4 ">
+                      <div className=" rounded-lg bg-white dark:bg-gray-800 overflow-hidden shadow py-4  h-full">
+                        {this.state.settings ? <Form {...this.state} updateProfile={this.updateUser} close={() => this.setState({ settings: false })} /> :
+                          <Blackjack {...this.state} play={this.playGame} newCard={this.pushCard} error={this.handleError} shuffle={this.shuffleCards} stand={this.stand} updateTurn={updateTurn} />}
+                      </div>
+                    </section>
+                  </div>
                 </div>
-              </div>
 
-              {/* Right column */}
-              <div className="h-screen pb-4">
-                {/* Announcements */}
-                <section aria-labelledby="announcements-title" className="h-full">
-                  {this.state.chat_enabled ? <Chat alert={this.handleError} /> : null}
-                </section>
+                {/* Right column */}
+                <div className="h-screen pb-4">
+                  {/* Announcements */}
+                  <section aria-labelledby="announcements-title" className="h-full">
+                    {this.state.chat_enabled ? <Chat alert={this.handleError} /> : null}
+                  </section>
+
+                </div>
 
               </div>
 
             </div>
-
-          </div>
-          <Footer />
-        </main>
-        <Notification {...this.state} close={this.updateNotification} />
+            <Footer />
+          </main>
+          <Notification {...this.state} close={this.updateNotification} />
 
 
+        </div>
       </div>
     )
   }

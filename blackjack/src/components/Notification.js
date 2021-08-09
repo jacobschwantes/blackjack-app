@@ -1,4 +1,4 @@
-import { Fragment} from 'react'
+import { Fragment } from 'react'
 import { Transition } from '@headlessui/react'
 import { CheckCircleIcon } from '@heroicons/react/outline'
 import { XIcon } from '@heroicons/react/solid'
@@ -28,7 +28,7 @@ export default function Notification(props) {
               <div className="p-4">
                 <div className="flex items-start">
                   <div className="flex-shrink-0">
-                    <CheckCircleIcon className={"h-6 w-6 " + (props.error ? " text-red-400" : " text-cyan-400")} aria-hidden="true" />
+                    <CheckCircleIcon className={"h-6 w-6 " + (props.error ? " text-red-400" : " text-cyan-600")} aria-hidden="true" />
                   </div>
                   <div className="ml-3 w-0 flex-1 pt-0.5">
                     <p className="text-sm font-medium text-gray-900">{props.error ? "Uh oh..." : "Success"}</p>
@@ -36,7 +36,7 @@ export default function Notification(props) {
                   </div>
                   <div className="ml-4 flex-shrink-0 flex">
                     <button
-                      className="bg-white rounded-md inline-flex text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500"
+                      className="bg-white rounded-md inline-flex text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-600"
                       onClick={() => {
                         props.close()
                       }}
