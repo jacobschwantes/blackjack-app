@@ -56,7 +56,7 @@ export default function Form(props) {
 
             <div className="col-span-3">
               <label className="block text-sm font-medium text-gray-700">Profile Picture</label>
-              <div className="mt-1 flex items-center">
+              <div className="mt-1 mb-8 flex items-center">
                 <span className="inline-bloc ">
                   <img className="object-cover rounded-full overflow-hidden h-12 w-12" alt="profile" src={url}></img>
                 </span>
@@ -81,18 +81,19 @@ export default function Form(props) {
         </div>
       </div>
 
-      <div className=" absolute bottom-2 right-2">
+      <div className=" float-right ">
         <div className="flex  ">
+          
           <button
             type="button"
             onClick={() => props.close()}
-            className="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500"
+            className="bg-white  py-2 px-3 border border-gray-300 rounded-md shadow-sm text-sm font-medium leading-4  focus:outline-none hover:bg-gray-100  focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500"
           >
             Cancel
           </button>
           <button
             type="submit"
-            className="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-cyan-600 hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500"
+            className="ml-2 inline-flex justify-center py-2 px-4 border border-gray-400 shadow-sm text-sm font-medium rounded-md leading-4 text-white bg-cyan-600 hover:bg-cyan-700  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500"
           >
             Save
           </button>

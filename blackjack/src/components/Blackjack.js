@@ -7,7 +7,7 @@ export default class Blackjack extends Component {
   }
   render() {
     return (
-      <div className="w-full h-full relative">
+      <div className="w-full h-full relative px-3 ">
         { this.props.new_player === true || (this.props.game_over && this.props.victor) ?
           <div className="w-full h-full z-10  absolute items-center justify-center flex animate-fade-in">
             <div className="bg-white border-gray-200 border-2 shadow-lg p-4 rounded-lg flex flex-col  items-center justify-center">
@@ -20,33 +20,33 @@ export default class Blackjack extends Component {
               </div></div>
           </div> : null}
 
-        <div className={" h-full flex flex-col " + (this.props.game_over ? " filter blur-sm" : null)}>
+        <div className={" h-full flex flex-col w-full " + (this.props.game_over ? " filter blur-sm" : null)}>
 
-        <div className="  mt-1 flex justify-center mr-24 flex-1">
-            {this.props.dealer ? this.props[this.props.turn === 'player' ? 'dealer_hidden' : 'dealer'].map((card, i) => {
+        <div name="dealer_card_container" className="lg:px-4 px-4 lg:max-w-full  flex  flex-1  justify-center lg:mr-36 mr-32">
+            {this.props.dealer ? this.props[this.props.turn === 'player' ? 'dealer_hidden' : 'dealer'].map((card) => {
               return (
-                <div key={i} className="  animate-fade-in-right -mr-24">
-                  <img alt="card" className="h-full object-contain rounded-lg" src={card.image}></img>
-                </div>
+               
+                  <img alt="card" className="object-contain  animate-fade-in-right lg:-mr-36 -mr-32" src={"cards/" + card.code + ".svg"}></img>
+               
               )
             }) : null}
 
           </div>
-          <h1 className="mx-2 text-center  text-xl mt-1">{this.props.turn === 'player' && this.props.player_hard > 0  && this.props.dealer_hard > 0 ? this.props.dealer_hidden_score : this.props.dealer_soft !== this.props.dealer_hard && this.props.dealer_soft < 21 ? (this.props.dealer_soft + ' / ' + this.props.dealer_hard) : this.props.dealer_soft === 21  ? this.props.dealer_soft : this.props.turn === 'dealer' ? this.props.dealer_hard : null}</h1>
+          <h1 className="mx-2 text-center  text-xl mt-1 ">{this.props.turn === 'player' && this.props.player_hard > 0  && this.props.dealer_hard > 0 ? this.props.dealer_hidden_score : this.props.dealer_soft !== this.props.dealer_hard && this.props.dealer_soft < 21 ? (this.props.dealer_soft + ' / ' + this.props.dealer_hard) : this.props.dealer_soft === 21  ? this.props.dealer_soft : this.props.turn === 'dealer' ? this.props.dealer_hard : null}</h1>
 
-          <div className="  mt-1 flex justify-center mr-24 flex-1">
-            {this.props.player ? this.props.player.map((card, i) => {
+          <div name="player_card_container" className="lg:px-4 px-4  flex-1  lg:max-w-full   flex justify-center lg:mr-36 mr-32">
+            {this.props.player ? this.props.player.map((card) => {
               return (
-                <div key={i} className="  animate-fade-in-right -mr-24">
-                  <img alt="card" className="h-full object-contain rounded-lg" src={card.image}></img>
-                </div>
+       
+                  <img alt="card" className="object-contain animate-fade-in-right lg:-mr-36 -mr-32" src={"cards/" + card.code + ".svg"}></img>
+            
               )
             }) : null}
 
           </div>
-          <h1 className="text-center text-xl ">{this.props.player_hard === 0 ? null : (this.props.player_soft !== this.props.player_hard && this.props.player_soft < 21 ? (this.props.player_soft + ' / ' + this.props.player_hard) : this.props.player_soft === 21 ? this.props.player_soft : this.props.player_hard)}</h1>
-          <div className="flex  items-center ">
-            <div className="flex w-full flex-1 ">
+          <h1 className="text-center text-xl  ">{this.props.player_hard === 0 ? null : (this.props.player_soft !== this.props.player_hard && this.props.player_soft < 21 ? (this.props.player_soft + ' / ' + this.props.player_hard) : this.props.player_soft === 21 ? this.props.player_soft : this.props.player_hard)}</h1>
+          <div className="flex  items-center  ">
+            <div className="flex  flex-1  ">
               <button disabled={this.props.game_over || this.props.turn === 'dealer' || this.props.player_bust || this.props.player_hard > 21} className="inline-flex flex-grow justify-center py-2 mx-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-cyan-600 hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500" onClick={() => this.props.newCard('player')}>Hit</button>
               <button disabled={this.props.game_over || this.props.turn === 'dealer' || this.props.player_bust} className="inline-flex flex-grow justify-center py-2 mx-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-cyan-600 hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500" onClick={() => { this.props.updateTurn(this.props.user.uid, 'dealer'); setTimeout(() => { this.props.stand() }, 1000) }}>Stand</button>
               <button disabled={this.props.game_over || this.props.turn === 'dealer' || this.props.player_bust} className="inline-flex flex-grow justify-center py-2 mx-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-cyan-600 hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500" onClick={() => this.props.play()}>play</button>

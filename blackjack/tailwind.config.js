@@ -4,6 +4,9 @@ module.exports = {
   darkMode: false, // or 'media' or 'class'
   theme: {
     extend: {
+      screens: {
+        'xs': '375px',
+      },
       maxWidth: {
         '1/4': '25%',
         '1/2': '50%',
@@ -11,7 +14,8 @@ module.exports = {
         '3/5': '60%',
         '9/10': '90%',
         '9/20': '45%',
-        '2/5': '40%'
+        '2/5': '40%',
+        'screen-xs': '300px',
        },
        height: {
         '1/4': '25%',
