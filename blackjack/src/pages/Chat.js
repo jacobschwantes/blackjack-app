@@ -17,6 +17,7 @@ export default class Chat extends Component {
       writeError: null,
       loadingChats: false,
       loadingUsers: false,
+      lastChat: null
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -64,13 +65,20 @@ export default class Chat extends Component {
     const chatArea = this.myRef.current;
     try {
       if (!filter.isProfane(this.state.content)) {
-        await db.ref("chats").push({
-          content: filter.clean(this.state.content),
-          timestamp: Date.now(),
-          uid: this.state.user.uid,
-          profileSrc: this.state.user.photoURL,
-          userName: this.state.user.displayName
-        });
+        if (Math.abs((this.state.lastChat - Date.now()) / 1000) % 60 > 1) {
+          this.setState({ lastChat: Date.now() })
+          await db.ref("chats").push({
+            content: filter.clean(this.state.content),
+            timestamp: Date.now(),
+            uid: this.state.user.uid,
+            profileSrc: this.state.user.photoURL,
+            userName: this.state.user.displayName
+          });
+        }
+        else {
+          this.props.alert("You're sending messages too quickly.")
+        }
+
       }
       else {
         this.props.alert('That message contained profanity. It has not been sent.')
@@ -88,6 +96,7 @@ export default class Chat extends Component {
     const time = dateFormat(now, "mmmm dS, yyyy h:MM TT");
     return time;
   }
+
 
   classNames(...classes) {
     return classes.filter(Boolean).join(' ')
