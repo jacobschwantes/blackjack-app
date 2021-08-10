@@ -11,7 +11,7 @@ import {
   MenuIcon,
   XIcon,
 } from '@heroicons/react/outline'
-import { endGame, newSession, updateScore, updateTurn, writeCard, writeDealerHiddenCard, writeDealerHiddenScore, writeReason, writeUserBlackjack, writeUserData, writeUserHands, writeUserStats, writeUserWins, updateTimestamp } from "../helpers/db";
+import { endGame, newSession, updateScore, updateTurn, writeCard, writeDealerHiddenCard, writeDealerHiddenScore, writeReason, writeUserBlackjack, writeUserData, writeUserHands, writeUserStats, writeUserWins, updateTimestamp, updateDarkMode } from "../helpers/db";
 import Welcome from "../components/Welcome";
 import Footer from "../components/Footer";
 import { uploadPicture } from "../helpers/storage";
@@ -177,8 +177,9 @@ export default class Dashboard extends Component {
           },
           () => {
             upload.snapshot.ref.getDownloadURL().then((downloadURL) => {
-              writeUserData(this.state.user.uid, name, downloadURL, darkMode);
-              auth().currentUser.updateProfile({
+              writeUserData(this.state.user.uid, name, downloadURL);
+              updateDarkMode(this.state.user.uid, darkMode)
+              this.state.user.updateProfile({
                 displayName: name,
                 photoURL: downloadURL
               });
@@ -200,8 +201,9 @@ export default class Dashboard extends Component {
 
     }
     else {
-      await writeUserData(auth().currentUser.uid, name, this.state.user.photoURL, darkMode);
-      await auth().currentUser.updateProfile({
+      await writeUserData(this.state.user.uid, name, this.state.user.photoURL);
+      await updateDarkMode(this.state.user.uid, darkMode);
+      await this.state.user.updateProfile({
         displayName: name
       });
       this.setState({

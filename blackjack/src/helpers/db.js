@@ -1,10 +1,13 @@
 import { db } from "../services/firebase";
 // Update user profile data
-export function writeUserData(userId, name, imageUrl, darkMode) {
+export function writeUserData(userId, name, imageUrl) {
   return db.ref("users/" + userId).update({
     username: name,
     picture: imageUrl,
-    uid: userId,
+    uid: userId
+  });
+}export function updateDarkMode(userId, darkMode) {
+  return db.ref("users/" + userId).update({
     dark_mode: darkMode
   });
 }

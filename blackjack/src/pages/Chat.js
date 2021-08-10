@@ -3,7 +3,6 @@ import { auth } from "../services/firebase";
 import { db } from "../services/firebase";
 let Filter = require('bad-words');
 let filter = new Filter();
-let dateFormat = require("dateformat");
 const devUID = 'WL5h3hFpovNgi7Ix3U4iBNFkXkF3';
 export default class Chat extends Component {
   constructor(props) {
@@ -71,8 +70,6 @@ export default class Chat extends Component {
             content: filter.clean(this.state.content),
             timestamp: Date.now(),
             uid: this.state.user.uid,
-            profileSrc: this.state.user.photoURL,
-            userName: this.state.user.displayName
           });
         }
         else {
@@ -89,12 +86,6 @@ export default class Chat extends Component {
     } catch (error) {
       this.setState({ writeError: error.message });
     }
-  }
-
-  formatTime(timestamp) {
-    const now = new Date(timestamp);
-    const time = dateFormat(now, "mmmm dS, yyyy h:MM TT");
-    return time;
   }
 
 
