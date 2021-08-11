@@ -5,10 +5,11 @@ export default function Form(props) {
   const [url, setUrl] = useState(props.url);
   const [file, setFile] = useState(null);
   const [dark, setDark] = useState(props.dark);
+  const [chat, setChat] = useState(props.chat_enabled);
   const inputFile = useRef(null)
   function handleSubmit(e) {
     e.preventDefault();
-    props.updateProfile(user, file, dark);
+    props.updateProfile(user, file, dark, chat);
     props.close();
   };
   function handleChange(e) {
@@ -39,7 +40,7 @@ export default function Form(props) {
             </p>
           </div>
 
-          <div className="mt-6  sm:grid-cols-6">
+          <div className="mt-4  sm:grid-cols-6">
             <div className="sm:col-span-4">
               <label htmlFor="username" className="block text-sm font-medium text-gray-700 dark:text-gray-50">
                 Username
@@ -81,7 +82,7 @@ export default function Form(props) {
                 />
               </div>
             </div>
-            <Switch.Group as="div" className="flex items-center justify-between">
+            <Switch.Group as="div" className="flex items-center justify-between my-2">
               <span className="flex-grow flex flex-col">
                 <Switch.Label as="span" className="block text-sm font-medium text-gray-700 dark:text-gray-50" passive>
                   Dark mode
@@ -102,6 +103,32 @@ export default function Form(props) {
                   aria-hidden="true"
                   className={classNames(
                     dark ? 'translate-x-5' : 'translate-x-0',
+                    'pointer-events-none inline-block h-5 w-5 rounded-full bg-white dark:bg-gray-800 shadow transform ring-0 transition ease-in-out duration-200'
+                  )}
+                />
+              </Switch>
+            </Switch.Group>
+            <Switch.Group as="div" className="flex items-center justify-between my-2">
+              <span className="flex-grow flex flex-col">
+                <Switch.Label as="span" className="block text-sm font-medium text-gray-700 dark:text-gray-50" passive>
+                  Enable chat
+                </Switch.Label>
+                <Switch.Description as="span" className="text-sm text-gray-500 dark:text-gray-400">
+                  Toggles chat visiblity.
+                </Switch.Description>
+              </span>
+              <Switch
+                checked={chat}
+                onChange={setChat}
+                className={classNames(
+                  chat ? 'bg-cyan-600' : 'bg-gray-200 dark:bg-gray-700',
+                  'relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-2  focus:ring-cyan-500'
+                )}
+              >
+                <span
+                  aria-hidden="true"
+                  className={classNames(
+                    chat ? 'translate-x-5' : 'translate-x-0',
                     'pointer-events-none inline-block h-5 w-5 rounded-full bg-white dark:bg-gray-800 shadow transform ring-0 transition ease-in-out duration-200'
                   )}
                 />

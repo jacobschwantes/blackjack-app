@@ -11,7 +11,7 @@ import {
   MenuIcon,
   XIcon,
 } from '@heroicons/react/outline'
-import { endGame, newSession, updateScore, updateTurn, writeCard, writeDealerHiddenCard, writeDealerHiddenScore, writeReason, writeUserBlackjack, writeUserData, writeUserHands, writeUserStats, writeUserWins, updateTimestamp, updateDarkMode } from "../helpers/db";
+import { endGame, newSession, updateScore, updateTurn, writeCard, writeDealerHiddenCard, writeDealerHiddenScore, writeReason, writeUserBlackjack, writeUserData, writeUserHands, writeUserStats, writeUserWins, updateTimestamp, updateSettings } from "../helpers/db";
 import Welcome from "../components/Welcome";
 import Footer from "../components/Footer";
 import { uploadPicture } from "../helpers/storage";
@@ -91,11 +91,22 @@ export default class Dashboard extends Component {
       db.ref("users/" + this.state.user.uid).on("value", snapshot => {
         let data = snapshot.val();
         if (data) {
-          this.setState({
-            dark: data.dark_mode,
-            username: data.username,
-            url: data.picture
-          });
+          if (data.chat_enabled !== undefined) {
+            this.setState({
+              dark: data.dark_mode,
+              chat_enabled: data.chat_enabled,
+              username: data.username,
+              url: data.picture
+            });
+          } else {
+            this.setState({
+              dark: data.dark_mode,
+              chat_enabled: true,
+              username: data.username,
+              url: data.picture
+            })
+          }
+
         }
       })
       db.ref("users/" + this.state.user.uid + "/deck").on("value", snapshot => {
@@ -163,7 +174,7 @@ export default class Dashboard extends Component {
   update(status) {
     this.setState(() => ({ settings: status, mobile_open: false }))
   }
-  async updateUser(name, file, darkMode) {
+  async updateUser(name, file, darkMode, chat) {
 
     if (file) {
       if (file.size < 4194304) {
@@ -178,7 +189,7 @@ export default class Dashboard extends Component {
           () => {
             upload.snapshot.ref.getDownloadURL().then((downloadURL) => {
               writeUserData(this.state.user.uid, name, downloadURL);
-              updateDarkMode(this.state.user.uid, darkMode)
+              updateSettings(this.state.user.uid, darkMode, chat)
               this.state.user.updateProfile({
                 displayName: name,
                 photoURL: downloadURL
@@ -202,7 +213,7 @@ export default class Dashboard extends Component {
     }
     else {
       await writeUserData(this.state.user.uid, name, this.state.user.photoURL);
-      await updateDarkMode(this.state.user.uid, darkMode);
+      await updateSettings(this.state.user.uid, darkMode, chat);
       await this.state.user.updateProfile({
         displayName: name
       });
@@ -507,16 +518,16 @@ export default class Dashboard extends Component {
               </>
             )}
           </Popover>
-          <main className="-mt-24 min-h-screen ">
+          <main className="-mt-24 lg:h-screen  min-h-screen">
             <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:max-w-7xl lg:px-8 h-full">
 
               {/* Main 3 column grid */}
-              <div className={"h-full lg:mt-0 mt-14 grid grid-cols-1 gap-1 items-start lg:gap-5 " + (this.state.chat_enabled ? "lg:grid-cols-3" : "lg:grid-cols-2")}>
+              <div className={"h-full lg:mt-0 mt-14 grid grid-cols-1 gap-1 items-start lg:gap-5 " + (this.state.chat_enabled ? "lg:grid-cols-3" : "lg:grid-cols-1")}>
                 {/* Left column */}
-                <div className="grid grid-cols-1 lg:col-span-2 h-full">
+                <div className={"grid grid-cols-1 lg:col-span-2 h-full " + (this.state.chat_enabled ? "lg:col-span-2" : "lg:col-span-1")}>
                   <div className="flex flex-col h-full w-full">
                     {/* Welcome panel */}
-                    <section aria-labelledby="profile-overview-title" >
+                    <section aria-labelledby="profile-overview-title flex-1" >
                       <div className="rounded-lg bg-white dark:bg-gray-900 overflow-hidden shadow">
                         <h2 className="sr-only" id="profile-overview-title">
                           Profile Overview
@@ -546,8 +557,8 @@ export default class Dashboard extends Component {
                     </section>
 
                     {/* Actions panel */}
-                    <section aria-labelledby="quick-links-title" className="lg:h-full h-screen  py-4 ">
-                      <div className=" rounded-lg bg-white dark:bg-gray-800 overflow-hidden shadow py-4  h-full">
+                    <section aria-labelledby="quick-links-title" className=" h-screen lg:flex-1   py-4  ">
+                      <div className=" rounded-lg bg-white dark:bg-gray-800 overflow-hidden shadow py-4 flex-1 h-full w-full ">
                         {this.state.settings ? <Form {...this.state} updateProfile={this.updateUser} close={() => this.setState({ settings: false })} /> :
                           <Blackjack {...this.state} play={this.playGame} newCard={this.pushCard} error={this.handleError} shuffle={this.shuffleCards} stand={this.stand} updateTurn={updateTurn} />}
                       </div>
@@ -556,18 +567,25 @@ export default class Dashboard extends Component {
                 </div>
 
                 {/* Right column */}
-                <div className="h-screen pb-4">
-                  {/* Announcements */}
-                  <section aria-labelledby="announcements-title" className="h-full">
-                    {this.state.chat_enabled ? <Chat alert={this.handleError} /> : null}
-                  </section>
+                {this.state.chat_enabled ?
+                  <div className="h-screen pb-4">
+                    {/* Announcements */}
 
-                </div>
+                    <section aria-labelledby="announcements-title" className="h-full">
+                      {this.state.chat_enabled ? <Chat alert={this.handleError} /> : null}
+                    </section>
+
+
+                  </div>
+                  : null
+                }
 
               </div>
 
             </div>
             <Footer />
+
+
           </main>
           <Notification {...this.state} close={this.updateNotification} />
 
