@@ -95,7 +95,7 @@ export default class Chat extends Component {
 
   render() {
     return (
-      <div className="rounded-lg bg-white dark:bg-gray-800 overflow-hidden shadow  p-6 h-full flex flex-col">
+      <div className={"rounded-lg bg-white dark:bg-gray-800 overflow-hidden shadow  p-6 h-full flex flex-col"}>
         <h2 className="text-base font-medium text-gray-900 dark:text-gray-50" id="announcements-title">
           Chat
         </h2>
@@ -110,7 +110,7 @@ export default class Chat extends Component {
               let user = this.state.users.find(user => user.uid === chat.uid);
               return (
                 <div className=" text-white rounded-lg p-2 my-2 w-full break-words bg-gray-100 dark:bg-gray-700">
-                  <p className=" font-semibold text-sm dark:text-gray-50 text-gray-800  "><span><img className="mr-1 float-left rounded-full h-5 w-5 object-cover " alt="" src={user.picture}></img></span><span className={"font-bold text-center text-xs text-white dark:text-cyan-500 bg-cyan-600 dark:bg-gray-100 rounded mr-0.5 " + (chat.uid === devUID ? " px-1" : null)}>{chat.uid === devUID ? 'dev' : null} </span>{user.username}</p>
+                  <p className=" font-semibold text-sm dark:text-gray-50 text-gray-800  "><span><img className="mr-1 float-left rounded-full h-5 w-5 object-cover " alt="" src={user.picture}></img></span><span className={"font-bold text-center text-xs rounded mr-1 px-1  dark:bg-gray-100 " + (chat.uid === devUID ? "bg-cyan-600 text-white dark:text-cyan-500  " : "bg-gray-300 dark:text-gray-600" )}>{chat.uid === devUID ? 'dev' : 'Lvl ' + user.lvl} </span>{user.username}</p>
                   <p className="text-base dark:text-gray-50 text-gray-800 ">{chat.content}</p>
                 </div>
               )

@@ -7,11 +7,12 @@ import Blackjack from "../components/Blackjack";
 import { checkDeck, drawCards, shuffleDeck } from "../helpers/api";
 import Notification from "../components/Notification";
 import Form from "../components/Form";
+import Profile from "../components/Profile";
 import {
   MenuIcon,
   XIcon,
 } from '@heroicons/react/outline'
-import { endGame, newSession, updateScore, updateTurn, writeCard, writeDealerHiddenCard, writeDealerHiddenScore, writeReason, writeUserBlackjack, writeUserData, writeUserHands, writeUserStats, writeUserWins, updateTimestamp, updateSettings } from "../helpers/db";
+import { endGame, newSession, updateScore, updateTurn, writeCard, writeDealerHiddenCard, writeDealerHiddenScore, writeReason, writeUserBlackjack, writeUserData, writeUserHands, writeUserStats, writeUserWins, updateTimestamp, updateSettings, writeXP } from "../helpers/db";
 import Welcome from "../components/Welcome";
 import Footer from "../components/Footer";
 import { uploadPicture } from "../helpers/storage";
@@ -43,6 +44,7 @@ export default class Dashboard extends Component {
       player_bust: false,
       dealer_bust: false,
       settings: false,
+      profile: false,
       error: null,
       notification_message: null,
       game_over: true,
@@ -53,9 +55,11 @@ export default class Dashboard extends Component {
       hands: 0,
       blackjacks: 0,
       failed: 0,
-      chat_enabled: true,
+      chat_enabled: false,
       mobile_open: false,
-      dark: true
+      dark: true,
+      xp: 0,
+      lvl: 1,
     };
     this.update = this.update.bind(this);
     this.updateUser = this.updateUser.bind(this);
@@ -91,22 +95,17 @@ export default class Dashboard extends Component {
       db.ref("users/" + this.state.user.uid).on("value", snapshot => {
         let data = snapshot.val();
         if (data) {
-          if (data.chat_enabled !== undefined) {
+         if(!data.xp) {
+           writeXP(this.state.user.uid, 0)
+         }
             this.setState({
-              dark: data.dark_mode,
-              chat_enabled: data.chat_enabled,
+              xp: data.xp,
+              lvl: data.lvl,
+              dark: (data.dark_mode === 'undefined' ? false : data.dark_mode),
+              chat_enabled: (data.chat_enabled === 'undefined' ? true : data.chat_enabled),
               username: data.username,
               url: data.picture
             });
-          } else {
-            this.setState({
-              dark: data.dark_mode,
-              chat_enabled: true,
-              username: data.username,
-              url: data.picture
-            })
-          }
-
         }
       })
       db.ref("users/" + this.state.user.uid + "/deck").on("value", snapshot => {
@@ -171,8 +170,8 @@ export default class Dashboard extends Component {
 
   }
 
-  update(status) {
-    this.setState(() => ({ settings: status, mobile_open: false }))
+  update(page, status) {
+    this.setState(() => ({ [page]: status, mobile_open: false }))
   }
   async updateUser(name, file, darkMode, chat) {
 
@@ -275,11 +274,14 @@ export default class Dashboard extends Component {
             if (player === 'dealer') {
               writeUserWins(this.state.user.uid, (this.state.wins + 1));
               writeUserHands(this.state.user.uid, (this.state.hands + 1))
+              writeXP(this.state.user.uid, (this.state.xp + 100))
             }
             else {
               writeUserHands(this.state.user.uid, (this.state.hands + 1))
+              writeXP(this.state.user.uid, (this.state.xp + 50))
             }
             endGame(this.state.user.uid, player === 'dealer' ? 'Player' : 'Dealer')
+
 
           }, 500)
 
@@ -321,6 +323,7 @@ export default class Dashboard extends Component {
     if (this.state.dealer_soft === 21 || this.state.player_soft === 21) {
       if (this.state.player_soft === 21) {
         writeUserBlackjack(this.state.user.uid, (this.state.blackjacks + 1));
+        writeXP(this.state.user.uid, (this.state.xp + 150));
       }
       await updateTurn(this.state.user.uid, 'dealer');
       setTimeout(() => { this.checkVictor() }, 1000)
@@ -346,8 +349,10 @@ export default class Dashboard extends Component {
       if (playerTrueScore > dealerTrueScore) {
         writeUserWins(this.state.user.uid, (this.state.wins + 1));
         writeUserHands(this.state.user.uid, (this.state.hands + 1))
+        writeXP(this.state.user.uid, (this.state.xp + 100))
       } else {
         writeUserHands(this.state.user.uid, (this.state.hands + 1))
+        writeXP(this.state.user.uid, (this.state.xp + 50))
       };
       endGame(this.state.user.uid, playerTrueScore === dealerTrueScore ? 'push' : playerTrueScore > dealerTrueScore ? 'Player' : 'Dealer')
     }, 500);
@@ -488,14 +493,14 @@ export default class Dashboard extends Component {
                               <button
 
                                 key="view_profile"
-                                onClick={() => this.update(true)}
+                                onClick={() => this.update('profile', true)}
                                 className="block rounded-md px-3 py-2 text-base text-gray-900 dark:text-gray-50 font-medium hover:bg-gray-100 hover:text-gray-800"
                               >
                                 View profile
                               </button>
                               <button
                                 key="settings"
-                                onClick={() => this.update(true)}
+                                onClick={() => this.update('settings', true)}
                                 className="block rounded-md px-3 py-2 text-base text-gray-900 dark:text-gray-50 font-medium hover:bg-gray-100 hover:text-gray-800"
                               >
                                 Settings
@@ -537,7 +542,7 @@ export default class Dashboard extends Component {
                             <Welcome {...this.state} />
                             <div className="mt-5 flex justify-center sm:mt-0">
                               <button
-                                onClick={() => this.setState({ settings: true })}
+                                onClick={() => this.update('profile', true)}
                                 className="flex justify-center items-center px-4 py-2 border border-gray-300 dark:border-gray-500 shadow-sm text-sm font-medium rounded-md text-gray-700 dark:text-gray-50 bg-white dark:bg-gray-600 hover:bg-gray-50"
                               >
                                 View profile
@@ -559,7 +564,7 @@ export default class Dashboard extends Component {
                     {/* Actions panel */}
                     <section aria-labelledby="quick-links-title" className=" h-screen lg:flex-1   py-4  ">
                       <div className=" rounded-lg bg-white dark:bg-gray-800 overflow-hidden shadow py-4 flex-1 h-full w-full ">
-                        {this.state.settings ? <Form {...this.state} updateProfile={this.updateUser} close={() => this.setState({ settings: false })} /> :
+                        {this.state.settings ? <Form {...this.state} updateProfile={this.updateUser} close={() => this.setState({ settings: false })} /> : this.state.profile ? <Profile {...this.state} update={this.update}/> :
                           <Blackjack {...this.state} play={this.playGame} newCard={this.pushCard} error={this.handleError} shuffle={this.shuffleCards} stand={this.stand} updateTurn={updateTurn} />}
                       </div>
                     </section>
@@ -572,7 +577,7 @@ export default class Dashboard extends Component {
                     {/* Announcements */}
 
                     <section aria-labelledby="announcements-title" className="h-full">
-                      {this.state.chat_enabled ? <Chat alert={this.handleError} /> : null}
+                      <Chat alert={this.handleError} {...this.state}/> 
                     </section>
 
 

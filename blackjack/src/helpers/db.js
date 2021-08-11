@@ -6,10 +6,17 @@ export function writeUserData(userId, name, imageUrl) {
     picture: imageUrl,
     uid: userId
   });
-}export function updateSettings(userId, darkMode, enabled) {
+}
+export function updateSettings(userId, darkMode, enabled) {
   return db.ref("users/" + userId).update({
     dark_mode: darkMode,
     chat_enabled: enabled
+  });
+}
+export function writeXP(userId, xp) {
+  return db.ref("users/" + userId).update({
+    xp,
+    lvl: (Math.trunc(xp / 1000) + 1)
   });
 }
 // Update user stats
