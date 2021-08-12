@@ -75,7 +75,7 @@ export default class Dashboard extends Component {
   }
   async componentDidMount() {
     try {
-      db.ref("users/" + this.state.user.uid + "/stats").on("value", snapshot => {
+      db.ref("users/session/" + this.state.user.uid + "/stats").on("value", snapshot => {
         let data = snapshot.val();
         if (data) {
           this.setState({
@@ -92,7 +92,7 @@ export default class Dashboard extends Component {
           writeUserStats(this.state.user.uid)
         }
       })
-      db.ref("users/" + this.state.user.uid).on("value", snapshot => {
+      db.ref("users/profile/" + this.state.user.uid).on("value", snapshot => {
         let data = snapshot.val();
         if (data) {
          if(!data.xp) {
@@ -101,40 +101,47 @@ export default class Dashboard extends Component {
             this.setState({
               xp: data.xp,
               lvl: data.lvl,
-              dark: (data.dark_mode === 'undefined' ? false : data.dark_mode),
-              chat_enabled: (data.chat_enabled === 'undefined' ? true : data.chat_enabled),
               username: data.username,
               url: data.picture
             });
         }
       })
-      db.ref("users/" + this.state.user.uid + "/deck").on("value", snapshot => {
+      db.ref("users/settings/" + this.state.user.uid).on("value", snapshot => {
+        let data = snapshot.val();
+        if (data) {
+            this.setState({
+              dark: (data.dark_mode === 'undefined' ? false : data.dark_mode),
+              chat_enabled: (data.chat_enabled === 'undefined' ? true : data.chat_enabled),
+            });
+        }
+      })
+      db.ref("users/session/" + this.state.user.uid + "/deck").on("value", snapshot => {
         let data = snapshot.val();
         checkDeck(this.state.user.uid, data)
           .then(response => { this.setState(() => ({ deck_id: response })) })
       })
-      db.ref("users/" + this.state.user.uid + "/session/player_cards").on("value", snapshot => {
+      db.ref("users/session/" + this.state.user.uid + "/game/player_cards").on("value", snapshot => {
         let player = [];
         snapshot.forEach((snap) => {
           player.push(snap.val().card);
         });
         this.setState({ player });
       });
-      db.ref("users/" + this.state.user.uid + "/session/dealer_cards").on("value", snapshot => {
+      db.ref("users/session/" + this.state.user.uid + "/game/dealer_cards").on("value", snapshot => {
         let dealer = [];
         snapshot.forEach((snap) => {
           dealer.push(snap.val().card);
         });
         this.setState({ dealer });
       });
-      db.ref("users/" + this.state.user.uid + "/session/dealer_hidden").on("value", snapshot => {
+      db.ref("users/session/" + this.state.user.uid + "/game/dealer_hidden").on("value", snapshot => {
         let dealer_hidden = [];
         snapshot.forEach((snap) => {
           dealer_hidden.push(snap.val().card);
         });
         this.setState({ dealer_hidden });
       });
-      db.ref("users/" + this.state.user.uid + "/session").on("value", snapshot => {
+      db.ref("users/session/" + this.state.user.uid + "/game").on("value", snapshot => {
         let data = snapshot.val();
         if (data) {
           this.setState({

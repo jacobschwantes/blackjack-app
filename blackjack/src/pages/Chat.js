@@ -27,7 +27,7 @@ export default class Chat extends Component {
     this.setState({ readError: null, loadingChats: true });
     const chatArea = this.myRef.current;
     try {
-      db.ref("users").on("value", snapshot => {
+      db.ref("users/profile").on("value", snapshot => {
         let users = [];
         snapshot.forEach((snap) => {
           users.push(snap.val());
@@ -110,7 +110,15 @@ export default class Chat extends Component {
               let user = this.state.users.find(user => user.uid === chat.uid);
               return (
                 <div className=" text-white rounded-lg p-2 my-2 w-full break-words bg-gray-100 dark:bg-gray-700">
-                  <p className=" font-semibold text-sm dark:text-gray-50 text-gray-800  "><span><img className="mr-1 float-left rounded-full h-5 w-5 object-cover " alt="" src={user.picture}></img></span><span className={"font-bold text-center text-xs rounded mr-1 px-1  dark:bg-gray-100 " + (chat.uid === devUID ? "bg-cyan-600 text-white dark:text-cyan-500  " : "bg-gray-300 dark:text-gray-600" )}>{chat.uid === devUID ? 'dev' : 'Lvl ' + user.lvl} </span>{user.username}</p>
+                  <p className=" font-semibold text-sm dark:text-gray-50 text-gray-800  ">
+                    <span>
+                      <img className="mr-1 float-left rounded-full h-5 w-5 object-cover " alt="profile pic" src={user.picture} />
+                    </span>
+                    <span className={"font-bold text-center text-xs rounded mr-1 px-1   dark:bg-gray-100 " + (chat.uid === devUID ? "bg-cyan-600 text-white dark:text-cyan-500  " : "bg-gray-300 text-gray-600")}>
+                      {chat.uid === devUID ? 'dev' : 'Lvl ' + user.lvl}
+                    </span>
+                    {user.username}
+                  </p>
                   <p className="text-base dark:text-gray-50 text-gray-800 ">{chat.content}</p>
                 </div>
               )
