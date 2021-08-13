@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Footer from '../components/Footer';
-import Statcard from '../components/Statcard';
+import Stats from '../components/Stats';
 import Landing from '../components/Landing';
 
 export default class HomePage extends Component {
@@ -8,7 +8,7 @@ export default class HomePage extends Component {
     return (
       <div className="h-screen bg-gray-50">
       <Landing/>
-      <Statcard/>
+      <Stats/>
       <Footer/>
       </div>
     )

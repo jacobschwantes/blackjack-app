@@ -1,13 +1,12 @@
 import React, { Component, Fragment } from "react";
 import { auth, db } from "../services/firebase";
-import ProfileNav from "../components/ProfileNav";
+import Navigation from "../components/Navigation";
 import Chat from "./Chat";
 import { Popover, Transition } from '@headlessui/react'
 import Blackjack from "../components/Blackjack";
 import { checkDeck, drawCards, shuffleDeck } from "../helpers/api";
 import Notification from "../components/Notification";
-import Form from "../components/Form";
-import Profile from "../components/Profile";
+import Settings from "../components/Settings";
 import {
   MenuIcon,
   XIcon,
@@ -23,7 +22,7 @@ export default class Dashboard extends Component {
     this.state = {
       user: auth().currentUser,
       url: 'loading.jpg',
-      username: 'Loading',
+      username: 'Player',
       open: false,
       modal: true,
       stats: [
@@ -290,7 +289,7 @@ export default class Dashboard extends Component {
             endGame(this.state.user.uid, player === 'dealer' ? 'Player' : 'Dealer')
 
 
-          }, 500)
+          }, 750)
 
 
 
@@ -328,12 +327,12 @@ export default class Dashboard extends Component {
       "code": "1B",
     });
     if (this.state.dealer_soft === 21 || this.state.player_soft === 21) {
-      if (this.state.player_soft === 21) {
+      if (this.state.player_soft === 21 && this.state.dealer_soft !== 21) {
         writeUserBlackjack(this.state.user.uid, (this.state.blackjacks + 1));
         writeXP(this.state.user.uid, (this.state.xp + 150));
       }
       await updateTurn(this.state.user.uid, 'dealer');
-      setTimeout(() => { this.checkVictor() }, 1000)
+      this.checkVictor();
     }
   }
   async checkVictor() {
@@ -361,7 +360,7 @@ export default class Dashboard extends Component {
         writeUserHands(this.state.user.uid, (this.state.hands + 1))
         writeXP(this.state.user.uid, (this.state.xp + 50))
       };
-      endGame(this.state.user.uid, playerTrueScore === dealerTrueScore ? 'push' : playerTrueScore > dealerTrueScore ? 'Player' : 'Dealer')
+      setTimeout(() => { endGame(this.state.user.uid, playerTrueScore === dealerTrueScore ? 'push' : playerTrueScore > dealerTrueScore ? 'Player' : 'Dealer') }, 500) 
     }, 500);
 
   }
@@ -428,7 +427,7 @@ export default class Dashboard extends Component {
                     <div className="hidden lg:ml-4 lg:flex lg:items-center lg:py-5 lg:pr-0.5">
 
                       {/* Profile dropdown */}
-                      <ProfileNav {...this.state} update={this.update} />
+                      <Navigation {...this.state} update={this.update} />
                     </div>
 
                     {/* Menu button */}
@@ -498,14 +497,6 @@ export default class Dashboard extends Component {
                             <div className="mt-3 px-2 space-y-1">
 
                               <button
-
-                                key="view_profile"
-                                onClick={() => this.update('profile', true)}
-                                className="block rounded-md px-3 py-2 text-base text-gray-900 dark:text-gray-50 font-medium hover:bg-gray-100 hover:text-gray-800"
-                              >
-                                View profile
-                              </button>
-                              <button
                                 key="settings"
                                 onClick={() => this.update('settings', true)}
                                 className="block rounded-md px-3 py-2 text-base text-gray-900 dark:text-gray-50 font-medium hover:bg-gray-100 hover:text-gray-800"
@@ -530,7 +521,7 @@ export default class Dashboard extends Component {
               </>
             )}
           </Popover>
-          <main className="-mt-24 lg:h-screen  min-h-screen">
+          <main className="-mt-24 lg:h-screen  min-h-screen ">
             <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:max-w-7xl lg:px-8 h-full">
 
               {/* Main 3 column grid */}
@@ -544,21 +535,14 @@ export default class Dashboard extends Component {
                         <h2 className="sr-only" id="profile-overview-title">
                           Profile Overview
                         </h2>
-                        <div className="bg-white dark:bg-gray-800 px-5 pt-5 pb-2 ">
+                        <div className="bg-white dark:bg-gray-800 px-5 pt-6 pb-2 ">
                           <div className="sm:flex sm:items-center sm:justify-between flex ">
                             <div className="flex-grow">
                               <Welcome {...this.state} />
                             </div>
 
 
-                            <div className="mt-5 flex justify-center sm:mt-0 ">
-                              <button
-                                onClick={() => this.update('profile', true)}
-                                className="flex justify-center items-center px-4 py-2 border border-gray-300 dark:border-gray-500 shadow-sm text-sm font-medium rounded-md text-gray-700 dark:text-gray-50 bg-white dark:bg-gray-600 hover:bg-gray-50"
-                              >
-                                View profile
-                              </button>
-                            </div>
+                           
 
                           </div>
 
@@ -578,7 +562,7 @@ export default class Dashboard extends Component {
                     {/* Actions panel */}
                     <section aria-labelledby="quick-links-title" className=" h-screen lg:flex-1   my-4  ">
                       <div className=" rounded-lg bg-white dark:bg-gray-800 overflow-hidden shadow  flex-1 h-full w-full ">
-                        {this.state.settings ? <Form {...this.state} updateProfile={this.updateUser} close={() => this.setState({ settings: false })} /> : this.state.profile ? <Profile {...this.state} update={this.update} /> :
+                        {this.state.settings ? <Settings {...this.state} updateProfile={this.updateUser} close={() => this.setState({ settings: false })} /> :
                           <Blackjack {...this.state} play={this.playGame} newCard={this.pushCard} error={this.handleError} shuffle={this.shuffleCards} stand={this.stand} updateTurn={updateTurn} />}
                       </div>
                     </section>

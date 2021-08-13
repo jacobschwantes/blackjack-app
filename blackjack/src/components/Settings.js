@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { Switch } from '@headlessui/react';
-export default function Form(props) {
+export default function Settings(props) {
   const [user, setUser] = useState(props.username);
   const [url, setUrl] = useState(props.url);
   const [file, setFile] = useState(null);

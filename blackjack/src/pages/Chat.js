@@ -99,7 +99,7 @@ export default class Chat extends Component {
         <h2 className="text-base font-medium text-gray-900 dark:text-gray-50" id="announcements-title">
           Chat
         </h2>
-        <div ref={this.myRef} className=" overflow-y-scroll scrollbar-hide flex-1 rounded-lg">
+        <div ref={this.myRef} className=" overflow-y-scroll scrollbar-hide flex-1 rounded-lg a">
           <div className="h-full mx-auto " >
             {/* loading indicator */}
             {this.state.loadingChats ? <div className="spinner-border text-success" role="status">
@@ -109,12 +109,12 @@ export default class Chat extends Component {
             {this.state.chats.map(chat => {
               let user = this.state.users.find(user => user.uid === chat.uid);
               return (
-                <div className=" text-white rounded-lg p-2 my-2 w-full break-words bg-gray-100 dark:bg-gray-700">
+                <div className=" text-white rounded-lg p-2 my-2 w-full break-words bg-gray-100 dark:bg-gray-700 animate-fade-in">
                   <p className=" font-semibold text-sm dark:text-gray-50 text-gray-800  ">
                     <span>
                       <img className="mr-1 float-left rounded-full h-5 w-5 object-cover " alt="profile pic" src={user.picture} />
                     </span>
-                    <span className={"font-bold text-center text-xs rounded mr-1 px-1   dark:bg-gray-100 " + (chat.uid === devUID ? "bg-cyan-600 text-white dark:text-cyan-500  " : "bg-gray-300 text-gray-600")}>
+                    <span className={"font-bold text-center text-xs rounded mr-1 px-1   dark:bg-gray-100 " + (chat.uid === devUID ? "bg-cyan-600 text-white dark:text-cyan-600  " : "bg-gray-300 text-gray-600")}>
                       {chat.uid === devUID ? 'dev' : 'Lvl ' + user.lvl}
                     </span>
                     {user.username}

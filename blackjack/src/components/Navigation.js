@@ -3,7 +3,7 @@ import { Fragment } from 'react'
 import { Transition } from '@headlessui/react'
 import { Menu } from '@headlessui/react'
 import { ChevronDownIcon } from '@heroicons/react/solid'
-export default function ProfileNav(props) {
+export default function Navigation(props) {
   function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
   }

@@ -39,7 +39,7 @@ module.exports = {
         'fade-in-right': {
             '0%': {
                 opacity: '0',
-                transform: 'translateX(20rem)'
+                transform: 'translateX(15rem)'
             },
             '100%': {
                 opacity: '1',
@@ -57,7 +57,8 @@ module.exports = {
     },
     animation: {
         'fade-in-right': 'fade-in-right 0.5s ease-out',
-        'fade-in': 'fade-in 0.5s ease-out'
+        'fade-in': 'fade-in 0.5s ease-out',
+        'smooth': '0.5s ease-out'
     }
 
     },
