@@ -18,7 +18,7 @@ export default function Welcome(props) {
                     </div>
 
                 </div>
-                 <h1 className="text-gray-400 text-right -mt-3 text-xs mr-1" >{props.xp - ((props.lvl - 1) * 1000)} / 1000</h1>
+                 <h1 className="text-gray-400 text-right -mt-3 text-xs mr-1 " >{props.xp - ((props.lvl - 1) * 1000)} / 1000</h1>
             </div>
 
         </div>

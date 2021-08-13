@@ -42,7 +42,11 @@ export function writeUserWins(userId, wins) {
     wins: wins
   });
 }
-
+export function writeXPSummary(userId, summary) {
+  return db.ref("users/session/" + userId + "/game").update({
+    summary
+  });
+}
 
 // Write deck info; last used and deck id
 export function writeDeck(userId, deck_id, timestamp) {
@@ -134,7 +138,8 @@ export function newSession(userID) {
     victor: false,
     dealer_hidden: [],
     dealer_hidden_score: 0,
-    reason: ''
+    reason: '',
+    summary: []
   })
 }
 

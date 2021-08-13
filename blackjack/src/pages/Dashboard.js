@@ -11,7 +11,7 @@ import {
   MenuIcon,
   XIcon,
 } from '@heroicons/react/outline'
-import { endGame, newSession, updateScore, updateTurn, writeCard, writeDealerHiddenCard, writeDealerHiddenScore, writeReason, writeUserBlackjack, writeUserData, writeUserHands, writeUserStats, writeUserWins, updateTimestamp, updateSettings, writeXP } from "../helpers/db";
+import { endGame, newSession, updateScore, updateTurn, writeCard, writeDealerHiddenCard, writeDealerHiddenScore, writeReason, writeUserBlackjack, writeUserData, writeUserHands, writeUserStats, writeUserWins, updateTimestamp, updateSettings, writeXP, writeXPSummary } from "../helpers/db";
 import Welcome from "../components/Welcome";
 import Footer from "../components/Footer";
 import { uploadPicture } from "../helpers/storage";
@@ -23,7 +23,7 @@ export default class Dashboard extends Component {
     this.state = {
       user: auth().currentUser,
       url: 'loading.jpg',
-      username: 'Player',
+      username: 'Loading',
       open: false,
       modal: false,
       stats: [
@@ -62,7 +62,7 @@ export default class Dashboard extends Component {
       lvl: 1,
     };
     this.update = this.update.bind(this);
-    this.resetProgress = this.resetProgress.bind(this);
+    this.removeUser = this.removeUser.bind(this);
     this.updateUser = this.updateUser.bind(this);
     this.pushCard = this.pushCard.bind(this);
     this.checkScore = this.checkScore.bind(this);
@@ -162,7 +162,8 @@ export default class Dashboard extends Component {
             turn: data.turn,
             victor: data.victor,
             dealer_hidden_score: data.dealer_hidden_score,
-            reason: data.reason
+            reason: data.reason,
+            summary: data.summary
           });
         }
         else {
@@ -290,10 +291,12 @@ export default class Dashboard extends Component {
               writeUserWins(this.state.user.uid, (this.state.wins + 1));
               writeUserHands(this.state.user.uid, (this.state.hands + 1))
               writeXP(this.state.user.uid, (this.state.xp + 100))
+              writeXPSummary(this.state.user.uid, [{event: 'Play a hand', value: 50}, {event: 'Win a hand', value: 100}])
             }
             else {
               writeUserHands(this.state.user.uid, (this.state.hands + 1))
               writeXP(this.state.user.uid, (this.state.xp + 50))
+              writeXPSummary(this.state.user.uid, [{event: 'Play a hand', value: 50}])
             }
             endGame(this.state.user.uid, player === 'dealer' ? 'Player' : 'Dealer')
 
@@ -339,14 +342,15 @@ export default class Dashboard extends Component {
       if (this.state.player_soft === 21 && this.state.dealer_soft !== 21) {
         writeUserBlackjack(this.state.user.uid, (this.state.blackjacks + 1));
         writeXP(this.state.user.uid, (this.state.xp + 150));
+        writeXPSummary(this.state.user.uid, [{event: 'Play a hand', value: 50}, {event: 'Win a hand', value: 50}, {event: 'Get a blackjack', value: 150}]);
       }
-      await updateTurn(this.state.user.uid, 'dealer');
+      updateTurn(this.state.user.uid, 'dealer');
       this.checkVictor();
     }
   }
   async checkVictor() {
-    let dealerTrueScore;
-    let playerTrueScore;
+    let dealerTrueScore = 0;
+    let playerTrueScore = 0;
     if (this.state.dealer_soft <= 21) {
       dealerTrueScore = this.state.dealer_soft;
     }
@@ -357,7 +361,7 @@ export default class Dashboard extends Component {
       playerTrueScore = this.state.player_soft;
     }
     else {
-      playerTrueScore = this.state.dealer_hard
+      playerTrueScore = this.state.player_hard
     };
     await writeReason(this.state.user.uid, playerTrueScore + ' - ' + dealerTrueScore)
     setTimeout(() => {
@@ -365,9 +369,11 @@ export default class Dashboard extends Component {
         writeUserWins(this.state.user.uid, (this.state.wins + 1));
         writeUserHands(this.state.user.uid, (this.state.hands + 1))
         writeXP(this.state.user.uid, (this.state.xp + 100))
+        writeXPSummary(this.state.user.uid, [{event: 'Play a hand', value: 50}, {event: 'Win a hand', value: 50}])
       } else {
         writeUserHands(this.state.user.uid, (this.state.hands + 1))
         writeXP(this.state.user.uid, (this.state.xp + 50))
+        writeXPSummary(this.state.user.uid, [{event: 'Play a hand', value: 50}])
       };
       setTimeout(() => { endGame(this.state.user.uid, playerTrueScore === dealerTrueScore ? 'push' : playerTrueScore > dealerTrueScore ? 'Player' : 'Dealer') }, 500) 
     }, 500);
@@ -391,7 +397,7 @@ export default class Dashboard extends Component {
   async stand() {
     if (!this.state.game_over) {
       if (this.state.dealer_hard >= 17 || (this.state.dealer_soft >= 17 && this.state.dealer_soft <= 21)) {
-        await this.checkVictor()
+        this.checkVictor()
       }
       else {
         await this.pushCard('dealer');
@@ -399,7 +405,7 @@ export default class Dashboard extends Component {
       }
     }
   }
-  async resetProgress() {
+  async removeUser() {
     this.setState(() => ({ modal: false, deletion_in_progress: true }));
     db.ref("chats").get().then(snapshot => {
       snapshot.forEach((snap) => {
@@ -436,7 +442,7 @@ export default class Dashboard extends Component {
       <div className={this.state.dark ? "dark" : null}>
         
         <div className=" bg-gray-50 dark:bg-gray-900" >
-          <Modal {...this.state} reset={this.resetProgress} update={() => this.setState({ modal: false })}/>
+          <Modal {...this.state} reset={this.removeUser} update={() => this.setState({ modal: false })}/>
           <Popover as="header" className=" pb-24 bg-gradient-to-r from-sky-800 to-cyan-600">
             {({ open }) => (
               <>

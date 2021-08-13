@@ -12,7 +12,10 @@ export default class Blackjack extends Component {
           <div className="w-full h-full z-10  absolute items-center justify-center flex animate-fade-in">
             <div className="bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-800 border-2 shadow-lg p-4 rounded-lg flex flex-col  items-center justify-center">
               <h1 className="dark:text-white text-6xl italic font-bold m-4 text-gray-800 text-center  ">{this.props.new_player ? 'Blackjack' : this.props.victor === 'push' ? "It's a push!" : this.props.victor + ' Wins!'}</h1>
-              <p className="dark:text-white bold text-2xl">{this.props.new_player ? "Click play to begin" : this.props.reason}</p>
+              <p className="dark:text-white bold text-3xl mb-2">{this.props.new_player ? "Click play to begin" : this.props.reason}</p>
+              {this.props.summary ? this.props.summary.map((award) => {
+                return  <p className="dark:text-gray-200 bold text-sm ">{award.event}: <span className="text-cyan-400">{award.value}XP</span></p>
+              }): null}
               <div className="mt-5 w-full flex  justify-center">
 
                 <button className="inline-flex flex-grow justify-center py-2 mx-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-cyan-600 hover:bg-cyan-700 focus:outline-none focus:ring-2  focus:ring-cyan-500" onClick={() => this.props.play()}>{this.props.new_player ? 'Play' : 'Play again'}</button>
