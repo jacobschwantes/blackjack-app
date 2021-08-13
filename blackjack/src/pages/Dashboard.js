@@ -55,7 +55,7 @@ export default class Dashboard extends Component {
       hands: 0,
       blackjacks: 0,
       failed: 0,
-      chat_enabled: false,
+      chat_enabled: true,
       mobile_open: false,
       dark: true,
       xp: 0,
@@ -95,24 +95,24 @@ export default class Dashboard extends Component {
       db.ref("users/profile/" + this.state.user.uid).on("value", snapshot => {
         let data = snapshot.val();
         if (data) {
-         if(!data.xp) {
-           writeXP(this.state.user.uid, 0)
-         }
-            this.setState({
-              xp: data.xp,
-              lvl: data.lvl,
-              username: data.username,
-              url: data.picture
-            });
+          if (!data.xp) {
+            writeXP(this.state.user.uid, 0)
+          }
+          this.setState({
+            xp: data.xp,
+            lvl: data.lvl,
+            username: data.username,
+            url: data.picture
+          });
         }
       })
       db.ref("users/settings/" + this.state.user.uid).on("value", snapshot => {
         let data = snapshot.val();
         if (data) {
-            this.setState({
-              dark: (data.dark_mode === 'undefined' ? false : data.dark_mode),
-              chat_enabled: (data.chat_enabled === 'undefined' ? true : data.chat_enabled),
-            });
+          this.setState({
+            dark: (data.dark_mode === 'undefined' ? false : data.dark_mode),
+            chat_enabled: (data.chat_enabled === 'undefined' ? true : data.chat_enabled),
+          });
         }
       })
       db.ref("users/session/" + this.state.user.uid + "/deck").on("value", snapshot => {
@@ -544,10 +544,14 @@ export default class Dashboard extends Component {
                         <h2 className="sr-only" id="profile-overview-title">
                           Profile Overview
                         </h2>
-                        <div className="bg-white dark:bg-gray-800 p-5">
-                          <div className="sm:flex sm:items-center sm:justify-between">
-                            <Welcome {...this.state} />
-                            <div className="mt-5 flex justify-center sm:mt-0">
+                        <div className="bg-white dark:bg-gray-800 px-5 pt-5 pb-2 ">
+                          <div className="sm:flex sm:items-center sm:justify-between flex ">
+                            <div className="flex-grow">
+                              <Welcome {...this.state} />
+                            </div>
+
+
+                            <div className="mt-5 flex justify-center sm:mt-0 ">
                               <button
                                 onClick={() => this.update('profile', true)}
                                 className="flex justify-center items-center px-4 py-2 border border-gray-300 dark:border-gray-500 shadow-sm text-sm font-medium rounded-md text-gray-700 dark:text-gray-50 bg-white dark:bg-gray-600 hover:bg-gray-50"
@@ -555,7 +559,10 @@ export default class Dashboard extends Component {
                                 View profile
                               </button>
                             </div>
+
                           </div>
+
+
                         </div>
                         <div className="border-t border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 grid grid-cols-1 divide-y divide-gray-200 dark:divide-gray-600 sm:grid-cols-3 sm:divide-y-0 sm:divide-x">
                           {this.state.stats.map((stat) => (
@@ -569,9 +576,9 @@ export default class Dashboard extends Component {
                     </section>
 
                     {/* Actions panel */}
-                    <section aria-labelledby="quick-links-title" className=" h-screen lg:flex-1   py-4  ">
-                      <div className=" rounded-lg bg-white dark:bg-gray-800 overflow-hidden shadow py-4 flex-1 h-full w-full ">
-                        {this.state.settings ? <Form {...this.state} updateProfile={this.updateUser} close={() => this.setState({ settings: false })} /> : this.state.profile ? <Profile {...this.state} update={this.update}/> :
+                    <section aria-labelledby="quick-links-title" className=" h-screen lg:flex-1   my-4  ">
+                      <div className=" rounded-lg bg-white dark:bg-gray-800 overflow-hidden shadow  flex-1 h-full w-full ">
+                        {this.state.settings ? <Form {...this.state} updateProfile={this.updateUser} close={() => this.setState({ settings: false })} /> : this.state.profile ? <Profile {...this.state} update={this.update} /> :
                           <Blackjack {...this.state} play={this.playGame} newCard={this.pushCard} error={this.handleError} shuffle={this.shuffleCards} stand={this.stand} updateTurn={updateTurn} />}
                       </div>
                     </section>
@@ -584,7 +591,7 @@ export default class Dashboard extends Component {
                     {/* Announcements */}
 
                     <section aria-labelledby="announcements-title" className="h-full">
-                      <Chat alert={this.handleError} {...this.state}/> 
+                      <Chat alert={this.handleError} {...this.state} />
                     </section>
 
 

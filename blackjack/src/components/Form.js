@@ -30,8 +30,8 @@ export default function Form(props) {
     return classes.filter(Boolean).join(' ')
   };
   return (
-    <form className="p-4 relative h-full w-full" onSubmit={handleSubmit}>
-      <div className="mb-8 ">
+    <form className="p-6 relative h-full w-full" onSubmit={handleSubmit}>
+      <div className="mb-8 animate-fade-in ">
         <div>
           <div>
             <h3 className="text-lg leading-6 font-medium text-gray-900 dark:text-gray-50">Settings</h3>

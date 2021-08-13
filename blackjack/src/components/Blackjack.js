@@ -45,7 +45,7 @@ export default class Blackjack extends Component {
 
           </div>
           <h1 className="text-center text-xl pb-4 dark:text-gray-50 ">{this.props.player_hard === 0 ? null : (this.props.player_soft !== this.props.player_hard && this.props.player_soft < 21 ? (this.props.player_soft + ' / ' + this.props.player_hard) : this.props.player_soft === 21 ? this.props.player_soft : this.props.player_hard)}</h1>
-          <div className="flex  items-center  ">
+          <div className="flex  items-center mb-4  ">
             <div className="flex  flex-1  ">
               <button disabled={this.props.game_over || this.props.turn === 'dealer' || this.props.player_bust || this.props.player_hard > 21} className="inline-flex flex-grow justify-center py-2 mx-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-cyan-600 hover:bg-cyan-700 focus:outline-none focus:ring-2  focus:ring-cyan-500" onClick={() => this.props.newCard('player')}>Hit</button>
               <button disabled={this.props.game_over || this.props.turn === 'dealer' || this.props.player_bust} className="inline-flex flex-grow justify-center py-2 mx-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-cyan-600 hover:bg-cyan-700 focus:outline-none focus:ring-2  focus:ring-cyan-500" onClick={() => { this.props.updateTurn(this.props.user.uid, 'dealer'); setTimeout(() => { this.props.stand() }, 1000) }}>Stand</button>
