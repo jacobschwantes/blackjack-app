@@ -3,7 +3,7 @@ import { auth } from "../services/firebase";
 import { db } from "../services/firebase";
 let Filter = require('bad-words');
 let filter = new Filter();
-const devUID = 'WL5h3hFpovNgi7Ix3U4iBNFkXkF3';
+const devUID = 'Rv8SvWF1ahhPpshsdAUqLh6BhQT2';
 export default class Chat extends Component {
   constructor(props) {
     super(props);

@@ -45,8 +45,8 @@ export default function Modal(props) {
           >
             <div className="inline-block bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
               <div className="sm:flex sm:items-start">
-                <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-cyan-100 sm:mx-0 sm:h-10 sm:w-10">
-                  <ExclamationIcon className="h-6 w-6 text-cyan-500" aria-hidden="true" />
+                <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
+                  <ExclamationIcon className="h-6 w-6 text-red-500" aria-hidden="true" />
                 </div>
                 <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
                   <Dialog.Title as="h3" className="text-lg leading-6 font-medium text-gray-900">
@@ -54,7 +54,7 @@ export default function Modal(props) {
                   </Dialog.Title>
                   <div className="mt-2">
                     <p className="text-sm text-gray-500">
-                      Do not click on links. Phishing links can be used to steal your information. Never reveal private information like passwords or credit card numbers.
+                      All stats, level progress, and user information will be permanently deleted. This action cannot be reversed.
                     </p>
                   </div>
                 </div>
@@ -62,10 +62,17 @@ export default function Modal(props) {
               <div className="mt-5 sm:mt-4 sm:ml-10 sm:pl-4 sm:flex">
                 <button
                   type="button"
-                  className="inline-flex justify-center w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-cyan-600 text-base font-medium text-white hover:bg-cyan-700 focus:outline-none  sm:w-auto sm:text-sm"
+                  className="inline-flex justify-center w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-gray-600 text-base font-medium text-white hover:bg-gray-700 focus:outline-none  sm:w-auto sm:text-sm mr-2"
                   onClick={() => props.update(false)}
                 >
-                  I understand
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  className="inline-flex justify-center w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-500 text-base font-medium text-white hover:bg-red-900 focus:outline-none  sm:w-auto sm:text-sm"
+                  onClick={() => props.reset()}
+                >
+                  Yes, delete my account
                 </button>
               </div>
             </div>

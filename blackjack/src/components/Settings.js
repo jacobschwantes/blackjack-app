@@ -134,6 +134,13 @@ export default function Settings(props) {
                 />
               </Switch>
             </Switch.Group>
+            <button
+            type="button"
+            onClick={() => props.reset()}
+            className=" bg-red-600 mt-1 py-2 px-3  rounded-md  text-sm font-medium leading-4 text-gray-50  focus:outline-none hover:bg-red-900"
+          >
+            Delete account
+          </button>
 
           </div>
         </div>

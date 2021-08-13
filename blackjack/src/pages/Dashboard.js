@@ -15,6 +15,7 @@ import { endGame, newSession, updateScore, updateTurn, writeCard, writeDealerHid
 import Welcome from "../components/Welcome";
 import Footer from "../components/Footer";
 import { uploadPicture } from "../helpers/storage";
+import Modal from "../components/Modal";
 
 export default class Dashboard extends Component {
   constructor(props) {
@@ -24,7 +25,7 @@ export default class Dashboard extends Component {
       url: 'loading.jpg',
       username: 'Player',
       open: false,
-      modal: true,
+      modal: false,
       stats: [
         { label: 'Hands played', value: 0 },
         { label: 'Wins', value: 0 },
@@ -61,6 +62,7 @@ export default class Dashboard extends Component {
       lvl: 1,
     };
     this.update = this.update.bind(this);
+    this.resetProgress = this.resetProgress.bind(this);
     this.updateUser = this.updateUser.bind(this);
     this.pushCard = this.pushCard.bind(this);
     this.checkScore = this.checkScore.bind(this);
@@ -79,30 +81,34 @@ export default class Dashboard extends Component {
         if (data) {
           this.setState({
             stats: [
-              { label: 'Hands played', value: data.hands },
-              { label: 'Wins', value: data.wins },
-              { label: 'Blackjacks', value: data.blackjacks },
+              { label: 'Hands played', value: (data.hands ? data.hands : 0) },
+              { label: 'Wins', value: (data.wins ? data.wins : 0) },
+              { label: 'Blackjack', value: (data.blackjacks ? data.blackjacks : 0) },
             ],
-            wins: data.wins,
-            hands: data.hands,
-            blackjacks: data.blackjacks
+            wins: (data.wins ? data.wins : 0),
+            hands: (data.hands ? data.hands : 0),
+            blackjacks: (data.blackjacks ? data.blackjacks : 0)
           });
-        } else {
-          writeUserStats(this.state.user.uid)
-        }
+        } 
       })
       db.ref("users/profile/" + this.state.user.uid).on("value", snapshot => {
         let data = snapshot.val();
         if (data) {
           if (!data.xp) {
-            writeXP(this.state.user.uid, 0)
-          }
-          this.setState({
+            writeXP(this.state.user.uid, 0);
+            this.setState({
+              username: data.username,
+              url: data.picture
+            });
+          } else {
+            this.setState({
             xp: data.xp,
             lvl: data.lvl,
             username: data.username,
             url: data.picture
           });
+          }
+          
         }
       })
       db.ref("users/settings/" + this.state.user.uid).on("value", snapshot => {
@@ -116,8 +122,10 @@ export default class Dashboard extends Component {
       })
       db.ref("users/session/" + this.state.user.uid + "/deck").on("value", snapshot => {
         let data = snapshot.val();
-        checkDeck(this.state.user.uid, data)
+        if(!this.state.deletion_in_progress) {
+          checkDeck(this.state.user.uid, data)
           .then(response => { this.setState(() => ({ deck_id: response })) })
+        }
       })
       db.ref("users/session/" + this.state.user.uid + "/game/player_cards").on("value", snapshot => {
         let player = [];
@@ -160,6 +168,7 @@ export default class Dashboard extends Component {
         else {
           this.setState({ new_player: true })
         }
+        
 
       })
     }
@@ -169,7 +178,7 @@ export default class Dashboard extends Component {
         stats: [
           { label: 'Hands played', value: 0 },
           { label: 'Wins', value: 0 },
-          { label: 'Blackjacks', value: 0 },
+          { label: 'Blackjack', value: 0 },
         ]
       });
     }
@@ -390,7 +399,22 @@ export default class Dashboard extends Component {
       }
     }
   }
-
+  async resetProgress() {
+    this.setState(() => ({ modal: false, deletion_in_progress: true }));
+    db.ref("chats").get().then(snapshot => {
+      snapshot.forEach((snap) => {
+        if(snap.val().uid === this.state.user.uid)
+        db.ref("chats/" + snap.key).remove()
+      });
+    }).then(() => {
+    this.state.user.delete();
+    db.ref("users/profile/" + this.state.user.uid).remove();
+    db.ref("users/settings/" + this.state.user.uid).remove(); 
+    db.ref("users/session/" + this.state.user.uid).remove(); 
+    })
+    
+    
+  }
   updateNotification() {
     this.setState(() => ({
       notification: false,
@@ -410,7 +434,9 @@ export default class Dashboard extends Component {
   render() {
     return (
       <div className={this.state.dark ? "dark" : null}>
+        
         <div className=" bg-gray-50 dark:bg-gray-900" >
+          <Modal {...this.state} reset={this.resetProgress} update={() => this.setState({ modal: false })}/>
           <Popover as="header" className=" pb-24 bg-gradient-to-r from-sky-800 to-cyan-600">
             {({ open }) => (
               <>
@@ -562,8 +588,8 @@ export default class Dashboard extends Component {
                     {/* Actions panel */}
                     <section aria-labelledby="quick-links-title" className=" h-screen lg:flex-1   my-4  ">
                       <div className=" rounded-lg bg-white dark:bg-gray-800 overflow-hidden shadow  flex-1 h-full w-full ">
-                        {this.state.settings ? <Settings {...this.state} updateProfile={this.updateUser} close={() => this.setState({ settings: false })} /> :
-                          <Blackjack {...this.state} play={this.playGame} newCard={this.pushCard} error={this.handleError} shuffle={this.shuffleCards} stand={this.stand} updateTurn={updateTurn} />}
+                        {this.state.settings ? <Settings {...this.state} updateProfile={this.updateUser} reset={() => this.setState({ modal: true })} close={() => this.setState({ settings: false })} /> :
+                          <Blackjack {...this.state} play={this.playGame} newCard={this.pushCard} error={this.handleError} shuffle={this.shuffleCards} stand={this.stand} updateTurn={updateTurn}  />}
                       </div>
                     </section>
                   </div>
