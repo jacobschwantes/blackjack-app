@@ -265,7 +265,7 @@ export default class Dashboard extends Component {
           cards_remaining: response.remaining
         }));
         let score = await this.checkScore(player, response.cards[0])
-        await updateScore(this.state.user.uid, player, (this.state[player + '_soft'] + score[0]), (this.state[player + '_hard'] + score[1]))
+        updateScore(this.state.user.uid, player, (this.state[player + '_soft'] + score[0]), (this.state[player + '_hard'] + score[1]))
         if (player === 'player' && (this.state.player_hard || this.state.player_soft) === 21) {
           await updateTurn(this.state.user.uid, 'dealer');
           setTimeout(() => {
@@ -339,13 +339,21 @@ export default class Dashboard extends Component {
       "code": "1B",
     });
     if (this.state.dealer_soft === 21 || this.state.player_soft === 21) {
-      if (this.state.player_soft === 21 && this.state.dealer_soft !== 21) {
+      if (this.state.player_soft === 21 && this.state.dealer_soft !== 21) { 
+        writeReason(this.state.user.uid, 'Blackjack!');
+        endGame(this.state.user.uid, 'Player');
         writeUserBlackjack(this.state.user.uid, (this.state.blackjacks + 1));
-        writeXP(this.state.user.uid, (this.state.xp + 150));
-        writeXPSummary(this.state.user.uid, [{event: 'Play a hand', value: 50}, {event: 'Win a hand', value: 50}, {event: 'Get a blackjack', value: 150}]);
-      }
+        writeUserWins(this.state.user.uid, (this.state.wins + 1));
+        writeUserHands(this.state.user.uid, (this.state.hands + 1));
+        writeXP(this.state.user.uid, (this.state.xp + 250));
+        writeXPSummary(this.state.user.uid, [{event: 'Play a hand', value: 50}, {event: 'Win a hand', value: 50}, {event: 'Blackjack', value: 150}]);
+        
+       
+      } else {
       updateTurn(this.state.user.uid, 'dealer');
       this.checkVictor();
+      }
+     
     }
   }
   async checkVictor() {

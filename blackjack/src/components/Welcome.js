@@ -1,6 +1,6 @@
 export default function Welcome(props) {
     return (
-        <div className="flex  sm:space-x-5  animate-fade-in">
+        <div className="flex flex-col sm:space-x-5 sm:flex-row   animate-fade-in ">
             <div className="flex-shrink-0">
                 <img className="mx-auto h-20 w-20 rounded-full object-cover" src={props.url} alt="" />
             </div>
