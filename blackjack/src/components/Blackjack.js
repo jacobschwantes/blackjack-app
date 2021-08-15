@@ -14,7 +14,7 @@ export default class Blackjack extends Component {
               <h1 className="dark:text-white text-6xl italic font-bold m-4 text-gray-800 text-center  ">{this.props.new_player ? 'Blackjack' : this.props.victor === 'push' ? "It's a push!" : this.props.victor + ' Wins!'}</h1>
               <p className="dark:text-white bold text-3xl mb-2">{this.props.new_player ? "Click play to begin" : this.props.reason}</p>
               {this.props.summary ? this.props.summary.map((award) => {
-                return  <p className="dark:text-gray-200 bold text-sm ">{award.event}: <span className="text-cyan-400">{award.value}XP</span></p>
+                return  <p className="dark:text-gray-200 bold text-sm ">{award.event}: <span className="text-cyan-600">{award.value}XP</span></p>
               }): null}
               <div className="mt-5 w-full flex  justify-center">
 
@@ -29,7 +29,7 @@ export default class Blackjack extends Component {
             {this.props.dealer ? this.props[this.props.turn === 'player' ? 'dealer_hidden' : 'dealer'].map((card) => {
               return (
 
-                <img alt="card" className="object-contain  animate-fade-in-right lg:-mr-36 -mr-32" src={"cards/" + card.code + ".svg"}></img>
+                <img alt="card" className="object-contain animate-fade-in-right lg:-mr-36 -mr-32" src={(this.props.dark ? "cards_dark/" : "cards/") + card.code + ".svg"}></img>
 
               )
             }) : null}
@@ -41,7 +41,7 @@ export default class Blackjack extends Component {
             {this.props.player ? this.props.player.map((card) => {
               return (
 
-                <img alt="card" className="object-contain animate-fade-in-right lg:-mr-36 -mr-32" src={"cards/" + card.code + ".svg"}></img>
+                <img alt="card" className="object-contain animate-fade-in-right lg:-mr-36 -mr-32" src={(this.props.dark ? "cards_dark/" : "cards/") + card.code + ".svg"}></img>
 
               )
             }) : null}

@@ -5,7 +5,22 @@ const faqs = [
   {
     question: "I found a bug, how do I report it?",
     answer:
-      "Send an email to ",
+      "Send an email to support@jasch.dev detailing the behavior and how to reproduce it.",
+  },
+  {
+    question: "I want to help contibute to this project. How do I get in touch?",
+    answer:
+      "Send an email to contact@jasch.dev or open up a pull request.",
+  },
+  {
+    question: "How do you level up?",
+    answer:
+      "Every hand played and won awards 50XP. Blackjacks award 150XP. Each level takes 1000XP.",
+  },
+  {
+    question: "Are there any rules?",
+    answer:
+      "Spam, harassment, and profanity are strictly prohibited. Offenses will result in account ban.  Most of all have fun and be nice to each other.",
   },
   // More questions...
 ]

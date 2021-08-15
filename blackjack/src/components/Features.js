@@ -23,7 +23,7 @@ export default function Features() {
     <div id="features" className="py-16 bg-gray-50 overflow-hidden lg:py-24">
       <div className="relative max-w-xl mx-auto px-4 sm:px-6 lg:px-8 lg:max-w-7xl">
         <svg
-          className="hidden lg:block absolute left-full transform -translate-x-full -translate-y-1/4"
+          className="hidden lg:block absolute left-full transform -translate-x-1/2 -translate-y-1/4"
           width={404}
           height={784}
           fill="none"
@@ -119,14 +119,14 @@ export default function Features() {
             <img
               className="relative mx-auto "
               width={400}
-              src="https://i.gyazo.com/0fb93e3c63c96e613a02aca93e2acca2.png"
+              src="ui_showcase.png"
               alt=""
             />
           </div>
         </div>
 
         <svg
-          className="hidden lg:block absolute right-full transform translate-x-full translate-y-12"
+          className="hidden lg:block absolute right-full transform translate-x-1/2 translate-y-12"
           width={404}
           height={784}
           fill="none"
@@ -197,7 +197,7 @@ export default function Features() {
               <img
                 className="relative mx-auto"
                 width={350}
-                src="https://i.gyazo.com/8ba63f9a085e5d1315073d1ef502c697.png"
+                src="chat_showcase.png"
                 alt=""
               />
             </div>

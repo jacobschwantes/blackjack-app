@@ -19,7 +19,7 @@ export default function Navigation(props) {
                 alt=""
               />
               <ChevronDownIcon
-                className="hidden flex-shrink-0 ml-1 h-5 w-5 text-white dark:text-gray-200 lg:block"
+                className="hidden flex-shrink-0 ml-1 h-5 w-5 text-cyan-600 dark:text-gray-200 lg:block"
                 aria-hidden="true"
               />
             </Menu.Button>
@@ -41,6 +41,19 @@ export default function Navigation(props) {
               <Menu.Item>
                 {({ active }) => (
                   <button
+                    onClick={() => props.update('help', true)}
+                    className={classNames(
+                      active ? 'bg-gray-100 dark:bg-gray-700' : '',
+                      'px-4 w-full text-left py-2 text-sm text-gray-700 dark:text-gray-50'
+                    )}
+                  >
+                    How to play
+                  </button>
+                )}
+              </Menu.Item>
+              <Menu.Item>
+                {({ active }) => (
+                  <button
                     onClick={() => props.update('settings', true)}
                     className={classNames(
                       active ? 'bg-gray-100 dark:bg-gray-700' : '',
@@ -51,6 +64,7 @@ export default function Navigation(props) {
                   </button>
                 )}
               </Menu.Item>
+              
               <Menu.Item>
                 {({ active }) => (
                   <button

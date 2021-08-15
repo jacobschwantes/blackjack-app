@@ -1,6 +1,7 @@
 import { Fragment } from 'react'
 import Footer from '../components/Footer';
 import Features from '../components/Features';
+import CTA from '../components/CTA';
 import FAQ from '../components/FAQ';
 import { Popover, Transition } from '@headlessui/react'
 import { MenuIcon, XIcon } from '@heroicons/react/outline'
@@ -152,7 +153,9 @@ export default function Landing2() {
     </div>
     <Features/>
       <FAQ/>
+      <CTA/>
       <Footer/>
+      
       </div>
   )
 }

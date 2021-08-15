@@ -7,6 +7,7 @@ import Blackjack from "../components/Blackjack";
 import { checkDeck, drawCards, shuffleDeck } from "../helpers/api";
 import Notification from "../components/Notification";
 import Settings from "../components/Settings";
+import Help from "../components/Help";
 import {
   MenuIcon,
   XIcon,
@@ -89,7 +90,7 @@ export default class Dashboard extends Component {
             hands: (data.hands ? data.hands : 0),
             blackjacks: (data.blackjacks ? data.blackjacks : 0)
           });
-        } 
+        }
       })
       db.ref("users/profile/" + this.state.user.uid).on("value", snapshot => {
         let data = snapshot.val();
@@ -102,13 +103,13 @@ export default class Dashboard extends Component {
             });
           } else {
             this.setState({
-            xp: data.xp,
-            lvl: data.lvl,
-            username: data.username,
-            url: data.picture
-          });
+              xp: data.xp,
+              lvl: data.lvl,
+              username: data.username,
+              url: data.picture
+            });
           }
-          
+
         }
       })
       db.ref("users/settings/" + this.state.user.uid).on("value", snapshot => {
@@ -122,9 +123,9 @@ export default class Dashboard extends Component {
       })
       db.ref("users/session/" + this.state.user.uid + "/deck").on("value", snapshot => {
         let data = snapshot.val();
-        if(!this.state.deletion_in_progress) {
+        if (!this.state.deletion_in_progress) {
           checkDeck(this.state.user.uid, data)
-          .then(response => { this.setState(() => ({ deck_id: response })) })
+            .then(response => { this.setState(() => ({ deck_id: response })) })
         }
       })
       db.ref("users/session/" + this.state.user.uid + "/game/player_cards").on("value", snapshot => {
@@ -169,7 +170,7 @@ export default class Dashboard extends Component {
         else {
           this.setState({ new_player: true })
         }
-        
+
 
       })
     }
@@ -291,12 +292,12 @@ export default class Dashboard extends Component {
               writeUserWins(this.state.user.uid, (this.state.wins + 1));
               writeUserHands(this.state.user.uid, (this.state.hands + 1))
               writeXP(this.state.user.uid, (this.state.xp + 100))
-              writeXPSummary(this.state.user.uid, [{event: 'Play a hand', value: 50}, {event: 'Win a hand', value: 100}])
+              writeXPSummary(this.state.user.uid, [{ event: 'Play a hand', value: 50 }, { event: 'Win a hand', value: 100 }])
             }
             else {
               writeUserHands(this.state.user.uid, (this.state.hands + 1))
               writeXP(this.state.user.uid, (this.state.xp + 50))
-              writeXPSummary(this.state.user.uid, [{event: 'Play a hand', value: 50}])
+              writeXPSummary(this.state.user.uid, [{ event: 'Play a hand', value: 50 }])
             }
             endGame(this.state.user.uid, player === 'dealer' ? 'Player' : 'Dealer')
 
@@ -339,21 +340,21 @@ export default class Dashboard extends Component {
       "code": "1B",
     });
     if (this.state.dealer_soft === 21 || this.state.player_soft === 21) {
-      if (this.state.player_soft === 21 && this.state.dealer_soft !== 21) { 
+      if (this.state.player_soft === 21 && this.state.dealer_soft !== 21) {
         writeReason(this.state.user.uid, 'Blackjack!');
         endGame(this.state.user.uid, 'Player');
         writeUserBlackjack(this.state.user.uid, (this.state.blackjacks + 1));
         writeUserWins(this.state.user.uid, (this.state.wins + 1));
         writeUserHands(this.state.user.uid, (this.state.hands + 1));
         writeXP(this.state.user.uid, (this.state.xp + 250));
-        writeXPSummary(this.state.user.uid, [{event: 'Play a hand', value: 50}, {event: 'Win a hand', value: 50}, {event: 'Blackjack', value: 150}]);
-        
-       
+        writeXPSummary(this.state.user.uid, [{ event: 'Play a hand', value: 50 }, { event: 'Win a hand', value: 50 }, { event: 'Blackjack', value: 150 }]);
+
+
       } else {
-      updateTurn(this.state.user.uid, 'dealer');
-      this.checkVictor();
+        updateTurn(this.state.user.uid, 'dealer');
+        this.checkVictor();
       }
-     
+
     }
   }
   async checkVictor() {
@@ -377,15 +378,14 @@ export default class Dashboard extends Component {
         writeUserWins(this.state.user.uid, (this.state.wins + 1));
         writeUserHands(this.state.user.uid, (this.state.hands + 1))
         writeXP(this.state.user.uid, (this.state.xp + 100))
-        writeXPSummary(this.state.user.uid, [{event: 'Play a hand', value: 50}, {event: 'Win a hand', value: 50}])
+        writeXPSummary(this.state.user.uid, [{ event: 'Play a hand', value: 50 }, { event: 'Win a hand', value: 50 }])
       } else {
         writeUserHands(this.state.user.uid, (this.state.hands + 1))
         writeXP(this.state.user.uid, (this.state.xp + 50))
-        writeXPSummary(this.state.user.uid, [{event: 'Play a hand', value: 50}])
+        writeXPSummary(this.state.user.uid, [{ event: 'Play a hand', value: 50 }])
       };
-      setTimeout(() => { endGame(this.state.user.uid, playerTrueScore === dealerTrueScore ? 'push' : playerTrueScore > dealerTrueScore ? 'Player' : 'Dealer') }, 500) 
+      setTimeout(() => { endGame(this.state.user.uid, playerTrueScore === dealerTrueScore ? 'push' : playerTrueScore > dealerTrueScore ? 'Player' : 'Dealer') }, 500)
     }, 500);
-
   }
 
   async shuffleCards() {
@@ -402,6 +402,7 @@ export default class Dashboard extends Component {
       this.setState({ notification: true })
     }
   }
+
   async stand() {
     if (!this.state.game_over) {
       if (this.state.dealer_hard >= 17 || (this.state.dealer_soft >= 17 && this.state.dealer_soft <= 21)) {
@@ -413,21 +414,20 @@ export default class Dashboard extends Component {
       }
     }
   }
+
   async removeUser() {
     this.setState(() => ({ modal: false, deletion_in_progress: true }));
     db.ref("chats").get().then(snapshot => {
       snapshot.forEach((snap) => {
-        if(snap.val().uid === this.state.user.uid)
-        db.ref("chats/" + snap.key).remove()
+        if (snap.val().uid === this.state.user.uid)
+          db.ref("chats/" + snap.key).remove()
       });
     }).then(() => {
-    this.state.user.delete();
-    db.ref("users/profile/" + this.state.user.uid).remove();
-    db.ref("users/settings/" + this.state.user.uid).remove(); 
-    db.ref("users/session/" + this.state.user.uid).remove(); 
+      this.state.user.delete();
+      db.ref("users/profile/" + this.state.user.uid).remove();
+      db.ref("users/settings/" + this.state.user.uid).remove();
+      db.ref("users/session/" + this.state.user.uid).remove();
     })
-    
-    
   }
   updateNotification() {
     this.setState(() => ({
@@ -436,22 +436,22 @@ export default class Dashboard extends Component {
       notification_message: null
     }))
   }
+
   handleError(message) {
     this.setState({ error: message });
     this.setState({ notification: true });
   }
+
   classNames(...classes) {
     return classes.filter(Boolean).join(' ')
   }
 
-
   render() {
     return (
       <div className={this.state.dark ? "dark" : null}>
-        
         <div className=" bg-gray-50 dark:bg-gray-900" >
-          <Modal {...this.state} reset={this.removeUser} update={() => this.setState({ modal: false })}/>
-          <Popover as="header" className=" pb-24 bg-gradient-to-r from-sky-800 to-cyan-600">
+          <Modal {...this.state} reset={this.removeUser} update={() => this.setState({ modal: false })} />
+          <Popover as="header" className=" pb-24 bg-gradient-to-r ">
             {({ open }) => (
               <>
                 <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:max-w-7xl lg:px-8">
@@ -459,17 +459,14 @@ export default class Dashboard extends Component {
                     {/* Logo */}
                     <div className="absolute left-0 py-1 top-0 flex-shrink-0 lg:static">
                       <a href="/">
-                        <h1 className="text-3xl tracking-tight font-extrabold sm:text-4xl md:text-4xl lg:text-5xl xl:text-5xl text-white dark:text-gray-50 xl:inline ">Blackjack</h1>
+                        <h1 className="text-3xl tracking-tight font-extrabold sm:text-4xl md:text-4xl lg:text-5xl xl:text-5xl text-cyan-600  dark:text-gray-50 xl:inline ">Blackjack</h1>
                       </a>
                     </div>
-
                     {/* Right section on desktop */}
                     <div className="hidden lg:ml-4 lg:flex lg:items-center lg:py-5 lg:pr-0.5">
-
                       {/* Profile dropdown */}
                       <Navigation {...this.state} update={this.update} />
                     </div>
-
                     {/* Menu button */}
                     <div className="absolute right-0 top-1 flex-shrink-0 lg:hidden">
                       {/* Mobile menu button */}
@@ -484,7 +481,6 @@ export default class Dashboard extends Component {
                     </div>
                   </div>
                 </div>
-
                 <Transition.Root show={this.state.mobile_open} as={Fragment}>
                   <div className="lg:hidden">
                     <Transition.Child
@@ -514,10 +510,7 @@ export default class Dashboard extends Component {
                         className="z-30 absolute top-0 inset-x-0 max-w-3xl mx-auto w-full p-2 transition transform origin-top"
                       >
                         <div className="rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 bg-white dark:bg-gray-800  divide-gray-200">
-
                           <div className="pt-4 pb-2">
-
-
                             <div className="flex items-center px-5">
 
                               <div className="flex-shrink-0">
@@ -527,14 +520,19 @@ export default class Dashboard extends Component {
                                 <div className="text-base font-medium text-gray-800 dark:text-gray-50 truncate">{this.state.username}</div>
                                 <div className="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">{this.state.user.email}</div>
                               </div>
-
                               <Popover.Button className="bg-white dark:bg-gray-800 rounded-md p-2 inline-flex items-center justify-center text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-cyan-500">
                                 <span className="sr-only">Close menu</span>
                                 <XIcon onClick={() => { this.setState({ mobile_open: false }) }} className="h-6 w-6" aria-hidden="true" />
                               </Popover.Button>
-
                             </div>
                             <div className="mt-3 px-2 space-y-1">
+                              <button
+                                key="help"
+                                onClick={() => this.update('help', true)}
+                                className="block rounded-md px-3 py-2 text-base text-gray-900 dark:text-gray-50 font-medium hover:bg-gray-100 hover:text-gray-800"
+                              >
+                                How to play
+                              </button>
 
                               <button
                                 key="settings"
@@ -550,7 +548,6 @@ export default class Dashboard extends Component {
                               >
                                 Sign out
                               </button>
-
                             </div>
                           </div>
                         </div>
@@ -561,16 +558,15 @@ export default class Dashboard extends Component {
               </>
             )}
           </Popover>
-          <main className="-mt-24 lg:h-screen  min-h-screen ">
+          <main className="-mt-24 lg:h-screen  min-h-screen">
             <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:max-w-7xl lg:px-8 h-full">
-
               {/* Main 3 column grid */}
               <div className={"h-full lg:mt-0 mt-14 grid grid-cols-1 gap-1 items-start lg:gap-5 " + (this.state.chat_enabled ? "lg:grid-cols-3" : "lg:grid-cols-1")}>
                 {/* Left column */}
-                <div className={"grid grid-cols-1 lg:col-span-2 h-full " + (this.state.chat_enabled ? "lg:col-span-2" : "lg:col-span-1")}>
-                  <div className="flex flex-col h-full w-full">
+                <div className={"grid grid-cols-1 lg:col-span-2 lg:h-screen " + (this.state.chat_enabled ? "lg:col-span-2" : "lg:col-span-1")}>
+                  <div className="flex flex-col lg:h-screen">
                     {/* Welcome panel */}
-                    <section aria-labelledby="profile-overview-title flex-1" >
+                    <section aria-labelledby="profile-overview-title " >
                       <div className="rounded-lg bg-white dark:bg-gray-900 overflow-hidden shadow">
                         <h2 className="sr-only" id="profile-overview-title">
                           Profile Overview
@@ -580,13 +576,7 @@ export default class Dashboard extends Component {
                             <div className="flex-grow">
                               <Welcome {...this.state} />
                             </div>
-
-
-                           
-
                           </div>
-
-
                         </div>
                         <div className="border-t border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 grid grid-cols-1 divide-y divide-gray-200 dark:divide-gray-600 sm:grid-cols-3 sm:divide-y-0 sm:divide-x">
                           {this.state.stats.map((stat) => (
@@ -598,41 +588,27 @@ export default class Dashboard extends Component {
                         </div>
                       </div>
                     </section>
-
                     {/* Actions panel */}
-                    <section aria-labelledby="quick-links-title" className=" h-screen lg:flex-1   my-4  ">
-                      <div className=" rounded-lg bg-white dark:bg-gray-800 overflow-hidden shadow  flex-1 h-full w-full ">
-                        {this.state.settings ? <Settings {...this.state} updateProfile={this.updateUser} reset={() => this.setState({ modal: true })} close={() => this.setState({ settings: false })} /> :
-                          <Blackjack {...this.state} play={this.playGame} newCard={this.pushCard} error={this.handleError} shuffle={this.shuffleCards} stand={this.stand} updateTurn={updateTurn}  />}
-                      </div>
+                    <section aria-labelledby="quick-links-title" className=" h-screen lg:flex-1 mt-4 rounded-lg bg-white dark:bg-gray-800 lg:overflow-scroll  shadow scrollbar-hide">
+                      {this.state.settings ? <Settings {...this.state} updateProfile={this.updateUser} reset={() => this.setState({ modal: true })} close={() => this.setState({ settings: false })} /> :
+                        this.state.help ? <Help close={this.update} /> : <Blackjack {...this.state} play={this.playGame} newCard={this.pushCard} error={this.handleError} shuffle={this.shuffleCards} stand={this.stand} updateTurn={updateTurn} />}
                     </section>
                   </div>
                 </div>
-
                 {/* Right column */}
                 {this.state.chat_enabled ?
-                  <div className="h-screen pb-4">
-                    {/* Announcements */}
-
-                    <section aria-labelledby="announcements-title" className="h-full">
+                  <div>
+                    <section aria-labelledby="announcements-title" className="h-screen">
                       <Chat alert={this.handleError} {...this.state} />
                     </section>
-
-
                   </div>
                   : null
                 }
-
               </div>
-
             </div>
             <Footer />
-
-
           </main>
           <Notification {...this.state} close={this.updateNotification} />
-
-
         </div>
       </div>
     )
