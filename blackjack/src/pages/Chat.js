@@ -14,6 +14,7 @@ export default class Chat extends Component {
       chats: [],
       users: [],
       content: '',
+      lastChat: null
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -21,7 +22,7 @@ export default class Chat extends Component {
   }
 
   async componentDidMount() {
-    this.setState({ readError: null, loadingChats: true });
+    this.setState({ readError: null, loadingChats: true, });
     const chatArea = this.myRef.current;
     try {
       // listens for changes in user profile tree - used for sourcing profile picture, level, and username of the uid who wrote the chat.
