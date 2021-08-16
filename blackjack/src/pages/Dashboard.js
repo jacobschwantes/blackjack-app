@@ -79,7 +79,7 @@ export default class Dashboard extends Component {
       db.ref("users/profile/" + this.state.user.uid).on("value", snapshot => {
         let data = snapshot.val();
         if (data) {
-          if (!data.xp) {
+          if (data.xp === undefined) {
             writeXP(this.state.user.uid, 0);
             this.setState({
               username: data.username,
