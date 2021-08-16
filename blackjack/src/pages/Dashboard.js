@@ -12,7 +12,7 @@ import {
   MenuIcon,
   XIcon,
 } from '@heroicons/react/outline'
-import { endGame, newSession, updateScore, updateTurn, writeCard, writeDealerHiddenCard, writeDealerHiddenScore, writeReason, writeUserBlackjack, writeUserData, writeUserHands, writeUserStats, writeUserWins, updateTimestamp, updateSettings, writeXP, writeXPSummary } from "../helpers/db";
+import { endGame, newSession, updateScore, updateTurn, writeCard, writeDealerHiddenCard, writeDealerHiddenScore, writeReason, writeUserData, updateTimestamp, updateSettings, writeXP, writeXPSummary, writeStreak, writeUserStats } from "../helpers/db";
 import Welcome from "../components/Welcome";
 import Footer from "../components/Footer";
 import { uploadPicture } from "../helpers/storage";
@@ -25,42 +25,22 @@ export default class Dashboard extends Component {
       user: auth().currentUser,
       url: 'loading.jpg',
       username: 'Loading',
-      open: false,
-      modal: false,
       stats: [
         { label: 'Hands played', value: 0 },
         { label: 'Wins', value: 0 },
         { label: 'Blackjacks', value: 0 },
       ],
-      readError: null,
+      open: false,
+      modal: false,
       notification: false,
       deck_id: '',
-      dealer_hidden: [],
-      dealer_hidden_score: 0,
-      cards_remaining: 0,
-      player_soft: 0,
-      player_hard: 0,
-      dealer_hard: 0,
-      dealer_soft: 0,
-      player_bust: false,
-      dealer_bust: false,
       settings: false,
       profile: false,
       error: null,
       notification_message: null,
-      game_over: true,
-      turn: 'player',
-      victor: false,
-      reason: '',
-      wins: 0,
-      hands: 0,
-      blackjacks: 0,
-      failed: 0,
       chat_enabled: true,
       mobile_open: false,
       dark: true,
-      xp: 0,
-      lvl: 1,
     };
     this.update = this.update.bind(this);
     this.removeUser = this.removeUser.bind(this);
@@ -77,6 +57,7 @@ export default class Dashboard extends Component {
   }
   async componentDidMount() {
     try {
+      // listen for changes in user stats and updates state
       db.ref("users/session/" + this.state.user.uid + "/stats").on("value", snapshot => {
         let data = snapshot.val();
         if (data) {
@@ -88,10 +69,13 @@ export default class Dashboard extends Component {
             ],
             wins: (data.wins ? data.wins : 0),
             hands: (data.hands ? data.hands : 0),
-            blackjacks: (data.blackjacks ? data.blackjacks : 0)
+            blackjacks: (data.blackjacks ? data.blackjacks : 0),
+            win_streak: (data.win_streak ? data.win_streak : 0),
+            blackjack_streak: (data.blackjack_streak ? data.blackjack_streak : 0)
           });
         }
       })
+      // listens for updates to profile information like level and username and updates state
       db.ref("users/profile/" + this.state.user.uid).on("value", snapshot => {
         let data = snapshot.val();
         if (data) {
@@ -109,9 +93,9 @@ export default class Dashboard extends Component {
               url: data.picture
             });
           }
-
         }
       })
+      // listen for changes in dark mode and chat visiblity settings
       db.ref("users/settings/" + this.state.user.uid).on("value", snapshot => {
         let data = snapshot.val();
         if (data) {
@@ -121,6 +105,7 @@ export default class Dashboard extends Component {
           });
         }
       })
+      // checks if deck id is valid
       db.ref("users/session/" + this.state.user.uid + "/deck").on("value", snapshot => {
         let data = snapshot.val();
         if (!this.state.deletion_in_progress) {
@@ -128,6 +113,7 @@ export default class Dashboard extends Component {
             .then(response => { this.setState(() => ({ deck_id: response })) })
         }
       })
+      // updates player card array
       db.ref("users/session/" + this.state.user.uid + "/game/player_cards").on("value", snapshot => {
         let player = [];
         snapshot.forEach((snap) => {
@@ -135,6 +121,7 @@ export default class Dashboard extends Component {
         });
         this.setState({ player });
       });
+      // updates dealer card array
       db.ref("users/session/" + this.state.user.uid + "/game/dealer_cards").on("value", snapshot => {
         let dealer = [];
         snapshot.forEach((snap) => {
@@ -142,6 +129,7 @@ export default class Dashboard extends Component {
         });
         this.setState({ dealer });
       });
+      // update hidden dealer card array - rendered during players turn
       db.ref("users/session/" + this.state.user.uid + "/game/dealer_hidden").on("value", snapshot => {
         let dealer_hidden = [];
         snapshot.forEach((snap) => {
@@ -149,6 +137,7 @@ export default class Dashboard extends Component {
         });
         this.setState({ dealer_hidden });
       });
+      // sets game state properties
       db.ref("users/session/" + this.state.user.uid + "/game").on("value", snapshot => {
         let data = snapshot.val();
         if (data) {
@@ -170,8 +159,6 @@ export default class Dashboard extends Component {
         else {
           this.setState({ new_player: true })
         }
-
-
       })
     }
     catch (error) {
@@ -184,14 +171,13 @@ export default class Dashboard extends Component {
         ]
       });
     }
-
   }
-
+// changes which page is show in main container
   update(page, status) {
     this.setState(() => ({ [page]: status, mobile_open: false }))
   }
+ // check file size of profile picture, user profile information on settings page submit 
   async updateUser(name, file, darkMode, chat) {
-
     if (file) {
       if (file.size < 4194304) {
         let upload = uploadPicture(this.state.user.uid, file)
@@ -225,7 +211,6 @@ export default class Dashboard extends Component {
           notification: true
         })
       }
-
     }
     else {
       await writeUserData(this.state.user.uid, name, this.state.user.photoURL);
@@ -238,8 +223,8 @@ export default class Dashboard extends Component {
         notification: true
       })
     }
-
   }
+  // check soft and hard score of drawn card
   async checkScore(player, card) {
     if (['KING', 'QUEEN', 'JACK'].includes(card.value)) {
       return [10, 10]
@@ -256,8 +241,10 @@ export default class Dashboard extends Component {
       return [parseInt(card.value), parseInt(card.value)]
     }
   }
+  // handles drawing card api request, checks if response is valid, checks and updates score, checks for bust and if player score is 21 to auto stand
   async pushCard(player) {
     if (!this.state.player_bust) {
+      this.setState({ dealing: true });
       let response = await drawCards(this.state.deck_id, 1);
       if (response.cards) {
         this.setState({ failed: 0 })
@@ -267,17 +254,15 @@ export default class Dashboard extends Component {
         }));
         let score = await this.checkScore(player, response.cards[0])
         updateScore(this.state.user.uid, player, (this.state[player + '_soft'] + score[0]), (this.state[player + '_hard'] + score[1]))
-        if (player === 'player' && (this.state.player_hard || this.state.player_soft) === 21) {
+        if (player === 'player' && (this.state.player_hard === 21 || this.state.player_soft === 21)) {
           await updateTurn(this.state.user.uid, 'dealer');
           setTimeout(() => {
             this.stand();
           }, 1000)
-
         }
         if (player === 'dealer' && this.state.dealer.length === 1) {
           if (score[0] === score[1]) {
             await writeDealerHiddenScore(this.state.user.uid, score[0])
-
           }
           else {
             writeDealerHiddenScore(this.state.user.uid, score[0] + ' / ' + score[1])
@@ -287,30 +272,30 @@ export default class Dashboard extends Component {
           await updateTurn(this.state.user.uid, 'dealer')
           await writeReason(this.state.user.uid, player === 'dealer' ? 'Dealer bust' : 'Player bust')
           setTimeout(() => {
-
+            // check who bust
             if (player === 'dealer') {
-              writeUserWins(this.state.user.uid, (this.state.wins + 1));
-              writeUserHands(this.state.user.uid, (this.state.hands + 1))
+              // dealer bust
+              writeUserStats(this.state.user.uid, (this.state.hands + 1), (this.state.wins + 1), this.state.blackjacks)
+              writeStreak(this.state.username, this.state.user.uid, (this.state.win_streak + 1), this.state.blackjack_streak);
               writeXP(this.state.user.uid, (this.state.xp + 100))
               writeXPSummary(this.state.user.uid, [{ event: 'Play a hand', value: 50 }, { event: 'Win a hand', value: 100 }])
             }
             else {
-              writeUserHands(this.state.user.uid, (this.state.hands + 1))
+              // player bust
+              writeUserStats(this.state.user.uid, (this.state.hands + 1), this.state.wins, this.state.blackjacks)
+              writeStreak(this.state.username, this.state.user.uid, 0, 0);
               writeXP(this.state.user.uid, (this.state.xp + 50))
               writeXPSummary(this.state.user.uid, [{ event: 'Play a hand', value: 50 }])
             }
             endGame(this.state.user.uid, player === 'dealer' ? 'Player' : 'Dealer')
-
-
           }, 750)
-
-
-
           if (this.state.cards_remaining < 121) {
             await this.shuffleCards()
           }
         }
+        this.setState({ dealing: false })
       }
+      // handles bad response from api
       else {
         this.setState((prevState) => ({
           failed: prevState.failed + 1
@@ -319,17 +304,21 @@ export default class Dashboard extends Component {
           await this.pushCard(player)
         }
         else {
+          // 3 bad requests in a row - usually lost internet connection
           this.setState({ error: 'There was a problem with that request. Please try again later.' })
           this.setState({ notification: true })
         }
       }
     }
   }
-
+  // initializes game, deals cards, checks if anyone has blackjack
   async playGame() {
-    this.setState({ new_player: false })
+    this.setState(() => ({
+      new_player: false,
+      player_bust: false,
+      dealing: true
+    }))
     await updateTimestamp(this.state.user.uid, Date.now())
-    this.setState({ player_bust: false })
     await newSession(this.state.user.uid)
     await this.pushCard('player');
     await this.pushCard('dealer');
@@ -339,24 +328,22 @@ export default class Dashboard extends Component {
     await writeDealerHiddenCard(this.state.user.uid, {
       "code": "1B",
     });
+    this.setState({ dealing: false });
     if (this.state.dealer_soft === 21 || this.state.player_soft === 21) {
       if (this.state.player_soft === 21 && this.state.dealer_soft !== 21) {
         writeReason(this.state.user.uid, 'Blackjack!');
         endGame(this.state.user.uid, 'Player');
-        writeUserBlackjack(this.state.user.uid, (this.state.blackjacks + 1));
-        writeUserWins(this.state.user.uid, (this.state.wins + 1));
-        writeUserHands(this.state.user.uid, (this.state.hands + 1));
+        writeUserStats(this.state.user.uid, (this.state.hands + 1), (this.state.wins + 1), (this.state.blackjacks + 1))
+        writeStreak(this.state.username, this.state.user.uid, (this.state.win_streak + 1), (this.state.blackjack_streak + 1));
         writeXP(this.state.user.uid, (this.state.xp + 250));
         writeXPSummary(this.state.user.uid, [{ event: 'Play a hand', value: 50 }, { event: 'Win a hand', value: 50 }, { event: 'Blackjack', value: 150 }]);
-
-
       } else {
         updateTurn(this.state.user.uid, 'dealer');
         this.checkVictor();
       }
-
     }
   }
+  // player and dealer have stood, evaluates 'true score' and checks of won
   async checkVictor() {
     let dealerTrueScore = 0;
     let playerTrueScore = 0;
@@ -375,19 +362,23 @@ export default class Dashboard extends Component {
     await writeReason(this.state.user.uid, playerTrueScore + ' - ' + dealerTrueScore)
     setTimeout(() => {
       if (playerTrueScore > dealerTrueScore) {
-        writeUserWins(this.state.user.uid, (this.state.wins + 1));
-        writeUserHands(this.state.user.uid, (this.state.hands + 1))
+        writeUserStats(this.state.user.uid, (this.state.hands + 1), (this.state.wins + 1), this.state.blackjacks)
+        writeStreak(this.state.username, this.state.user.uid, (this.state.win_streak + 1), this.state.blackjack_streak);
         writeXP(this.state.user.uid, (this.state.xp + 100))
         writeXPSummary(this.state.user.uid, [{ event: 'Play a hand', value: 50 }, { event: 'Win a hand', value: 50 }])
       } else {
-        writeUserHands(this.state.user.uid, (this.state.hands + 1))
+        writeUserStats(this.state.user.uid, (this.state.hands + 1), this.state.wins, this.state.blackjacks)
+        writeStreak(this.state.username, this.state.user.uid, 0, 0);
         writeXP(this.state.user.uid, (this.state.xp + 50))
         writeXPSummary(this.state.user.uid, [{ event: 'Play a hand', value: 50 }])
       };
       setTimeout(() => { endGame(this.state.user.uid, playerTrueScore === dealerTrueScore ? 'push' : playerTrueScore > dealerTrueScore ? 'Player' : 'Dealer') }, 500)
     }, 500);
+    if (this.state.cards_remaining < 121) {
+      await this.shuffleCards()
+    }
   }
-
+// shuffle cards - can be called manually after a game or is called automatically when 2/3 of the cards have been dealt
   async shuffleCards() {
     let response = await shuffleDeck(this.state.deck_id)
     if (response.remaining) {
@@ -402,7 +393,7 @@ export default class Dashboard extends Component {
       this.setState({ notification: true })
     }
   }
-
+  // player stands - dealer hits until 17
   async stand() {
     if (!this.state.game_over) {
       if (this.state.dealer_hard >= 17 || (this.state.dealer_soft >= 17 && this.state.dealer_soft <= 21)) {
@@ -414,7 +405,7 @@ export default class Dashboard extends Component {
       }
     }
   }
-
+// deletes user account, removes all chats from user, profile, session, and settings tree in db
   async removeUser() {
     this.setState(() => ({ modal: false, deletion_in_progress: true }));
     db.ref("chats").get().then(snapshot => {
@@ -429,6 +420,7 @@ export default class Dashboard extends Component {
       db.ref("users/session/" + this.state.user.uid).remove();
     })
   }
+  // closes notification
   updateNotification() {
     this.setState(() => ({
       notification: false,
@@ -436,7 +428,7 @@ export default class Dashboard extends Component {
       notification_message: null
     }))
   }
-
+// opens error notification
   handleError(message) {
     this.setState({ error: message });
     this.setState({ notification: true });
@@ -451,7 +443,7 @@ export default class Dashboard extends Component {
       <div className={this.state.dark ? "dark" : null}>
         <div className=" bg-gray-50 dark:bg-gray-900" >
           <Modal {...this.state} reset={this.removeUser} update={() => this.setState({ modal: false })} />
-          <Popover as="header" className=" pb-24 bg-gradient-to-r ">
+          <Popover as="header" className={" pb-24  " + (this.state.dark ? null : "bg-gradient-to-r from-sky-800 to-cyan-600")}>
             {({ open }) => (
               <>
                 <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:max-w-7xl lg:px-8">
@@ -459,7 +451,7 @@ export default class Dashboard extends Component {
                     {/* Logo */}
                     <div className="absolute left-0 py-1 top-0 flex-shrink-0 lg:static">
                       <a href="/">
-                        <h1 className="text-3xl tracking-tight font-extrabold sm:text-4xl md:text-4xl lg:text-5xl xl:text-5xl text-cyan-600  dark:text-gray-50 xl:inline ">Blackjack</h1>
+                        <h1 className="text-3xl tracking-tight font-extrabold sm:text-4xl md:text-4xl lg:text-5xl xl:text-5xl text-gray-50 xl:inline ">Blackjack</h1>
                       </a>
                     </div>
                     {/* Right section on desktop */}
@@ -588,14 +580,14 @@ export default class Dashboard extends Component {
                         </div>
                       </div>
                     </section>
-                    {/* Actions panel */}
+                    {/* main container */}
                     <section aria-labelledby="quick-links-title" className=" h-screen lg:flex-1 mt-4 rounded-lg bg-white dark:bg-gray-800 lg:overflow-scroll  shadow scrollbar-hide">
                       {this.state.settings ? <Settings {...this.state} updateProfile={this.updateUser} reset={() => this.setState({ modal: true })} close={() => this.setState({ settings: false })} /> :
                         this.state.help ? <Help close={this.update} /> : <Blackjack {...this.state} play={this.playGame} newCard={this.pushCard} error={this.handleError} shuffle={this.shuffleCards} stand={this.stand} updateTurn={updateTurn} />}
                     </section>
                   </div>
                 </div>
-                {/* Right column */}
+                {/* chat container */}
                 {this.state.chat_enabled ?
                   <div>
                     <section aria-labelledby="announcements-title" className="h-screen">

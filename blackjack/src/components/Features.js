@@ -1,6 +1,6 @@
-import { AnnotationIcon, GlobeAltIcon, LightningBoltIcon, MailIcon, ScaleIcon } from '@heroicons/react/outline'
-import { ChartBarIcon, ChatAlt2Icon, ChatAltIcon, IdentificationIcon, PresentationChartBarIcon, TrendingUpIcon } from '@heroicons/react/solid'
-
+// Features section on landing page
+import { ScaleIcon } from '@heroicons/react/outline'
+import { ChartBarIcon, ChatAlt2Icon, IdentificationIcon, TrendingUpIcon } from '@heroicons/react/solid'
 const communicationFeatures = [
   {
     id: 1,
@@ -17,7 +17,6 @@ const communicationFeatures = [
     icon: IdentificationIcon,
   },
 ]
-
 export default function Features() {
   return (
     <div id="features" className="py-16 bg-gray-50 overflow-hidden lg:py-24">
@@ -89,7 +88,7 @@ export default function Features() {
                     </div>
                     <p className="ml-16 text-lg leading-6 font-medium text-gray-900">Fast and fair</p>
                   </dt>
-                  <dd className="mt-2 ml-16 text-base text-gray-500">Each card is sourced lightning fast courtesy of the <a className=" text-cyan-600" href="https://deckofcardsapi.com/" target="_blank">Deck of Cards API</a>. Every user is assigned a unique deck id to draw cards from.</dd>
+                  <dd className="mt-2 ml-16 text-base text-gray-500">Each card is sourced lightning fast courtesy of the <a className=" text-cyan-600" rel="noreferrer" href="https://deckofcardsapi.com/" target="_blank">Deck of Cards API</a>. Every user is assigned a unique deck id to draw cards from.</dd>
                 </div>
             </dl>
           </div>

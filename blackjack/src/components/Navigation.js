@@ -1,3 +1,4 @@
+// Drop down menu top left of dashboard - desktop only
 import { auth } from "../services/firebase";
 import { Fragment } from 'react'
 import { Transition } from '@headlessui/react'
@@ -19,7 +20,7 @@ export default function Navigation(props) {
                 alt=""
               />
               <ChevronDownIcon
-                className="hidden flex-shrink-0 ml-1 h-5 w-5 text-cyan-600 dark:text-gray-200 lg:block"
+                className="hidden flex-shrink-0 ml-1 h-5 w-5 text-gray-200 lg:block"
                 aria-hidden="true"
               />
             </Menu.Button>
@@ -64,7 +65,7 @@ export default function Navigation(props) {
                   </button>
                 )}
               </Menu.Item>
-              
+
               <Menu.Item>
                 {({ active }) => (
                   <button

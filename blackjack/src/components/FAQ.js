@@ -1,11 +1,11 @@
+// faq on landing page
 import { Disclosure } from '@headlessui/react'
 import { ChevronDownIcon } from '@heroicons/react/outline'
-
 const faqs = [
   {
-    question: "I found a bug, how do I report it?",
+    question: "I have an issue with my account. How do I get help?",
     answer:
-      "Send an email to support@jasch.dev detailing the behavior and how to reproduce it.",
+      "Send an email to support@jasch.dev and someone will get back to you.",
   },
   {
     question: "I want to help contibute to this project. How do I get in touch?",
@@ -21,14 +21,11 @@ const faqs = [
     question: "Are there any rules?",
     answer:
       "Spam, harassment, and profanity are strictly prohibited. Offenses will result in account ban.  Most of all have fun and be nice to each other.",
-  },
-  // More questions...
+  }
 ]
-
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
-
 export default function FAQ() {
   return (
     <div id="faq" className="bg-gray-50">
@@ -63,4 +60,4 @@ export default function FAQ() {
       </div>
     </div>
   )
-                }
+}

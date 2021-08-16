@@ -1,3 +1,4 @@
+// Home page
 import { Fragment } from 'react'
 import Footer from '../components/Footer';
 import Features from '../components/Features';
@@ -7,14 +8,11 @@ import { Popover, Transition } from '@headlessui/react'
 import { MenuIcon, XIcon } from '@heroicons/react/outline'
 import { HashLink } from 'react-router-hash-link';
 
-
 const navigation = [
   { name: 'Features', href: '#features' },
   { name: 'FAQ', href: '#faq' },
-  { name: 'Demo', href: '#home' }
 ]
-
-export default function Landing2() {
+export default function Landing() {
   return (
   <div>
       
@@ -37,8 +35,9 @@ export default function Landing2() {
                 <div className="flex items-center flex-grow flex-shrink-0 lg:flex-grow-0">
                   <div className="flex items-center justify-between w-full md:w-auto">
                     <a href="/">
-                      <span className="sr-only">Workflow</span>
+                      <span className="sr-only">blackjack</span>
                       <img
+                        alt="blackjack"
                         className="h-8 w-auto sm:h-10"
                         src="favicon.ico"
                       />
@@ -64,7 +63,6 @@ export default function Landing2() {
                 </div>
               </nav>
             </div>
-
             <Transition
               as={Fragment}
               enter="duration-150 ease-out"
@@ -101,7 +99,7 @@ export default function Landing2() {
                     ))}
                   </div>
                   <a
-                    href="#"
+                    href="/login"
                     className="block w-full px-5 py-3 text-center font-medium text-cyan-600 bg-gray-50 hover:bg-gray-100"
                   >
                     Log in
@@ -110,7 +108,6 @@ export default function Landing2() {
               </Popover.Panel>
             </Transition>
           </Popover>
-
           <main className="mt-10 mx-auto max-w-7xl px-4 sm:mt-12 sm:px-6 md:mt-16 lg:mt-20 lg:px-8 xl:mt-28">
             <div className="sm:text-center lg:text-left">
               <h1 className="text-4xl tracking-tight font-extrabold text-gray-900 sm:text-5xl md:text-6xl">
@@ -131,10 +128,10 @@ export default function Landing2() {
                 </div>
                 <div className="mt-3 sm:mt-0 sm:ml-3">
                   <a
-                    href="/demo"
+                    href="#features"
                     className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-cyan-600 bg-gray-200 hover:bg-gray-300 md:py-4 md:text-lg md:px-10"
                   >
-                    Live demo
+                    Learn more
                   </a>
                 </div>
               </div>
@@ -149,13 +146,11 @@ export default function Landing2() {
           alt=""
         />
       </div>
-      
     </div>
     <Features/>
       <FAQ/>
       <CTA/>
       <Footer/>
-      
       </div>
   )
 }

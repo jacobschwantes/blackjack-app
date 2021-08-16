@@ -5,7 +5,7 @@ import {
   Switch,
   Redirect
 } from "react-router-dom";
-import Home from "./pages/Home";
+import Landing from "./pages/Landing";
 import Dashboard from "./pages/Dashboard";
 import Signup from "./pages/Signup";
 import Login from "./pages/Login";
@@ -77,7 +77,7 @@ class App extends Component {
     ) : (
         <Router>
           <Switch>
-            <Route exact path="/" component={Home} />
+            <Route exact path="/" component={Landing} />
             <PrivateRoute
               path="/blackjack"
               authenticated={this.state.authenticated}

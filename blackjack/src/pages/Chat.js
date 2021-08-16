@@ -1,9 +1,11 @@
+// Chat - displayed on dashbaord page
 import React, { Component } from "react";
 import { auth } from "../services/firebase";
 import { db } from "../services/firebase";
 let Filter = require('bad-words');
 let filter = new Filter();
 const devUID = 'Rv8SvWF1ahhPpshsdAUqLh6BhQT2';
+const adminUID = 'Rej3CBkXbLch63BMvGv1iWjijSJ3';
 export default class Chat extends Component {
   constructor(props) {
     super(props);
@@ -12,11 +14,6 @@ export default class Chat extends Component {
       chats: [],
       users: [],
       content: '',
-      readError: null,
-      writeError: null,
-      loadingChats: false,
-      loadingUsers: false,
-      lastChat: null
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -27,6 +24,7 @@ export default class Chat extends Component {
     this.setState({ readError: null, loadingChats: true });
     const chatArea = this.myRef.current;
     try {
+      // listens for changes in user profile tree - used for sourcing profile picture, level, and username of the uid who wrote the chat.
       db.ref("users/profile").on("value", snapshot => {
         let users = [];
         snapshot.forEach((snap) => {
@@ -35,6 +33,7 @@ export default class Chat extends Component {
         this.setState({ users });
         this.setState({ loadingUsers: false });
       });
+      // listens for changes in chat tree
       db.ref("chats").on("value", snapshot => {
         let chats = [];
         snapshot.forEach((snap) => {
@@ -45,19 +44,17 @@ export default class Chat extends Component {
         chatArea.scrollBy(0, chatArea.scrollHeight);
         this.setState({ loadingChats: false });
       });
-
     } catch (error) {
       this.setState({ readError: error.message, loadingChats: false });
     }
   }
-
 
   handleChange(event) {
     this.setState({
       content: event.target.value
     });
   }
-
+  // write chats - filters for profanity and rate limits to 1 message per second
   async handleSubmit(event) {
     event.preventDefault();
     this.setState({ writeError: null });
@@ -75,24 +72,19 @@ export default class Chat extends Component {
         else {
           this.props.alert("You're sending messages too quickly.")
         }
-
       }
       else {
         this.props.alert('That message contained profanity. It has not been sent.')
       }
-
       this.setState({ content: '' });
       chatArea.scrollBy(0, chatArea.scrollHeight);
     } catch (error) {
       this.setState({ writeError: error.message });
     }
   }
-
-
   classNames(...classes) {
     return classes.filter(Boolean).join(' ')
   }
-
   render() {
     return (
       <div className={"rounded-lg bg-white dark:bg-gray-800 overflow-hidden shadow  p-6 h-full flex flex-col"}>
@@ -101,7 +93,6 @@ export default class Chat extends Component {
         </h2>
         <div ref={this.myRef} className=" overflow-y-scroll scrollbar-hide flex-1 rounded-lg a">
           <div className="h-full mx-auto " >
-            {/* loading indicator */}
             {this.state.loadingChats ? <div className="spinner-border text-success" role="status">
               <span className="sr-only">Loading...</span>
             </div> : ""}
@@ -114,8 +105,8 @@ export default class Chat extends Component {
                     <span>
                       <img className="mr-1 float-left rounded-full h-5 w-5 object-cover " alt="profile pic" src={user.picture} />
                     </span>
-                    <span className={"font-bold text-center text-xs rounded mr-1 px-1   dark:bg-gray-100 " + (chat.uid === devUID ? "bg-cyan-600 text-white dark:text-cyan-600  " : "bg-gray-300 text-gray-600")}>
-                      {chat.uid === devUID ? 'dev' : 'Lvl ' + user.lvl}
+                    <span className={"font-bold text-center text-xs rounded mr-1 px-1   dark:bg-gray-100 " + (chat.uid === devUID || chat.uid === adminUID ? "bg-cyan-600 text-white dark:text-cyan-600  " : "bg-gray-300 text-gray-600")}>
+                      {chat.uid === devUID ? 'dev' : chat.uid === adminUID ? 'admin' : 'Lvl ' + user.lvl}
                     </span>
                     {user.username}
                   </p>
@@ -125,6 +116,7 @@ export default class Chat extends Component {
             })}
           </div>
         </div>
+        {/* input box */}
         <form onSubmit={this.handleSubmit}>
           <label className="text-gray-700 text-sm font-medium dark:text-gray-50">Send a message</label>
           <input id="chat" required className="form-control  rounded-lg  w-full  h-14 focus:ring-cyan-500 dark:bg-gray-700 dark:text-gray-50" name="content" onChange={this.handleChange} type="text" value={this.state.content}></input>

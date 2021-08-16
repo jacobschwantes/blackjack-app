@@ -9,7 +9,6 @@ export async function checkDeck(uid, data) {
                 .then(data => { return data })
             writeDeck(uid, deck.deck_id, Date.now())
             return deck.deck_id
-
         }
         // not expired; sets state with deck id
         else {
@@ -25,20 +24,21 @@ export async function checkDeck(uid, data) {
         return deck.deck_id
     }
 }
-
+// fetch card from api using deck id
 export async function drawCards(deck_id, count) {
-    return await fetch(`https://deckofcardsapi.com/api/deck/${deck_id}/draw/?count=${count}`,{ 
-    headers : { 
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-       }})
+    return await fetch(`https://deckofcardsapi.com/api/deck/${deck_id}/draw/?count=${count}`, {
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        }
+    })
         .then(response => response.json())
         .then(data => { return data })
-        .catch(err => {return err})
+        .catch(err => { return err })
 }
-
+// shuffle deck
 export async function shuffleDeck(deck_id) {
     return await fetch(`https://deckofcardsapi.com/api/deck/${deck_id}/shuffle/`)
         .then(response => response.json())
-        .then(data => {return data})
+        .then(data => { return data })
 }

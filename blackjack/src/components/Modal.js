@@ -1,12 +1,9 @@
-/* This example requires Tailwind CSS v2.0+ */
+// Used for delete account confirmation pop up
 import { Fragment, useRef} from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 import { ExclamationIcon } from '@heroicons/react/outline'
-
 export default function Modal(props) {
-
   const cancelButtonRef = useRef(null)
-
   return (
     <Transition.Root show={props.modal} as={Fragment}>
       <Dialog

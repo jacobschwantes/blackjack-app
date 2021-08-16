@@ -1,3 +1,4 @@
+// Settings page used in main container on dashboard page
 import { useState, useRef } from 'react';
 import { Switch } from '@headlessui/react';
 export default function Settings(props) {
@@ -16,7 +17,6 @@ export default function Settings(props) {
     e.target.id === 'username' ? setUser(e.target.value) : setUrl(e.target.value);
   };
   const onButtonClick = () => {
-    // `current` points to the mounted file input element
     inputFile.current.click();
   };
   const onImageChange = e => {
@@ -39,7 +39,6 @@ export default function Settings(props) {
               This information will be displayed publicly so be careful what you share.
             </p>
           </div>
-
           <div className="mt-4  sm:grid-cols-6">
             <div className="sm:col-span-4">
               <label htmlFor="username" className="block text-sm font-medium text-gray-700 dark:text-gray-50">
@@ -59,7 +58,6 @@ export default function Settings(props) {
                 />
               </div>
             </div>
-
             <div className="col-span-3 mb-3">
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-50">Profile Picture</label>
               <div className="mt-1 flex items-center">
@@ -135,20 +133,18 @@ export default function Settings(props) {
               </Switch>
             </Switch.Group>
             <button
-            type="button"
-            onClick={() => props.reset()}
-            className=" bg-red-600 mt-1 py-2 px-3  rounded-md  text-sm font-medium leading-4 text-gray-50  focus:outline-none hover:bg-red-900"
-          >
-            Delete account
-          </button>
-
+              type="button"
+              onClick={() => props.reset()}
+              className=" bg-red-600 mt-1 py-2 px-3  rounded-md  text-sm font-medium leading-4 text-gray-50  focus:outline-none hover:bg-red-900"
+            >
+              Delete account
+            </button>
           </div>
         </div>
       </div>
 
       <div className=" float-right ">
         <div className="flex  ">
-
           <button
             type="button"
             onClick={() => props.close()}

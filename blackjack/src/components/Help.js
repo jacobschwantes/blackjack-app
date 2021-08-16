@@ -1,6 +1,5 @@
-
+// Game rules displayed in main container on dashboard page
 export default function Help(props) {
-
     return (
         <div className="p-6 ">
             <div className="pb-5 border-b mb-3 border-gray-200 dark:border-gray-600 ">
@@ -41,26 +40,26 @@ export default function Help(props) {
             </div>
             <div>
                 <h1 className="text-lg leading-6 font-medium text-gray-900 dark:text-gray-50 my-2">Dealers play</h1>
-                <p className=" text-gray-900 dark:text-gray-400">When it is the dealers turn, the dealer flips their hidden card and if their total is less than 17 they will continue to hit until getting a 
-                score of 17 or greater.
+                <p className=" text-gray-900 dark:text-gray-400">When it is the dealers turn, the dealer flips their hidden card and if their total is less than 17 they will continue to hit until getting a
+                    score of 17 or greater.
                 </p>
             </div>
             <div>
                 <h1 className="text-lg leading-6 font-medium text-gray-900 dark:text-gray-50 my-2">Multiple hands, splits, double down, and insurance</h1>
                 <p className=" text-gray-900 dark:text-gray-400">This platform does not currently support playing multiple hands simultaneously or splitting pairs. Also since this platform does not
-                have a betting system, the ability to double down or buy insurance is not necessary.
+                    have a betting system, the ability to double down or buy insurance is not necessary.
                 </p>
             </div>
-           
+
             <div className="mt-2 w-full flex justify-end">
-                 <button
-                onClick={() => props.close('help', false)}  
-                className="ml-2  inline-flex  py-2 px-4     mb-4  shadow-sm text-sm font-medium rounded-md leading-4 text-white dark:text-gray-50 bg-cyan-600 hover:bg-cyan-700  focus:outline-none focus:ring-2  focus:ring-cyan-500"
-            >
-                Close
-            </button>
+                <button
+                    onClick={() => props.close('help', false)}
+                    className="ml-2  inline-flex  py-2 px-4     mb-4  shadow-sm text-sm font-medium rounded-md leading-4 text-white dark:text-gray-50 bg-cyan-600 hover:bg-cyan-700  focus:outline-none focus:ring-2  focus:ring-cyan-500"
+                >
+                    Close
+                </button>
             </div>
-         
+
         </div>
     )
 }
