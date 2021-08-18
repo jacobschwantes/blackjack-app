@@ -33,8 +33,6 @@ export default class Dashboard extends Component {
         { label: 'Blackjacks', value: 0 },
       ],
       readError: null,
-      open: false,
-      modal: false,
       notification: false,
       deck_id: '',
       dealer_hidden: [],
