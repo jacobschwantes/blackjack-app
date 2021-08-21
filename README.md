@@ -44,7 +44,7 @@ The page will reload if you make edits.\
 You will also see any lint errors in the console.
 
 ## Deployment
-You can easily for free using [Netlify](https://www.netlify.com/).
+You can easily for free using [Vercel](https://vercel.com/).
 
 ### Firebase
 You will need to create a [Firebase](https://firebase.google.com/) project to obtain your api keys. You then will need to update the config object with your firebase project keys in blackjack/services/firebase.js.
