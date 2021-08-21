@@ -44,8 +44,6 @@ export default class Dashboard extends Component {
       dealer_soft: 0,
       player_bust: false,
       dealer_bust: false,
-      settings: false,
-      profile: false,
       error: null,
       notification_message: null,
       game_over: true,
@@ -61,6 +59,7 @@ export default class Dashboard extends Component {
       dark: true,
       xp: 0,
       lvl: 1,
+      active: 'blackjack'
     };
     this.update = this.update.bind(this);
     this.removeUser = this.removeUser.bind(this);
@@ -73,6 +72,7 @@ export default class Dashboard extends Component {
     this.playGame = this.playGame.bind(this);
     this.checkVictor = this.checkVictor.bind(this);
     this.stand = this.stand.bind(this);
+    this.clearSession = this.clearSession.bind(this);
     this.myRef = React.createRef();
   }
   async componentDidMount() {
@@ -193,8 +193,8 @@ export default class Dashboard extends Component {
     }
   }
 // changes which page is show in main container
-  update(page, status) {
-    this.setState(() => ({ [page]: status, mobile_open: false }))
+  update(page) {
+    this.setState(() => ({ active: page, mobile_open: false }))
   }
  // check file size of profile picture, user profile information on settings page submit 
   async updateUser(name, file, darkMode, chat) {
@@ -455,10 +455,16 @@ export default class Dashboard extends Component {
     this.setState({ error: message });
     this.setState({ notification: true });
   }
+  // clears users game - used for stuck game from api errors
+  clearSession() {
+    db.ref("users/session/" + this.state.user.uid + "/game").remove();
+    this.setState({active: 'blackjack'});
+  }
 
   classNames(...classes) {
     return classes.filter(Boolean).join(' ')
   }
+
 
   render() {
     return (
@@ -542,7 +548,7 @@ export default class Dashboard extends Component {
                             <div className="mt-3 px-2 space-y-1">
                               <button
                                 key="help"
-                                onClick={() => this.update('help', true)}
+                                onClick={() => this.update('help')}
                                 className="block rounded-md px-3 py-2 text-base text-gray-900 dark:text-gray-50 font-medium hover:bg-gray-100 hover:text-gray-800"
                               >
                                 How to play
@@ -550,7 +556,7 @@ export default class Dashboard extends Component {
 
                               <button
                                 key="settings"
-                                onClick={() => this.update('settings', true)}
+                                onClick={() => this.update('settings')}
                                 className="block rounded-md px-3 py-2 text-base text-gray-900 dark:text-gray-50 font-medium hover:bg-gray-100 hover:text-gray-800"
                               >
                                 Settings
@@ -603,9 +609,9 @@ export default class Dashboard extends Component {
                       </div>
                     </section>
                     {/* main container */}
-                    <section aria-labelledby="quick-links-title" className=" h-screen lg:flex-1 mt-4 rounded-lg bg-white dark:bg-gray-800 lg:overflow-scroll  shadow scrollbar-hide">
-                      {this.state.settings ? <Settings {...this.state} updateProfile={this.updateUser} reset={() => this.setState({ modal: true })} close={() => this.setState({ settings: false })} /> :
-                        this.state.help ? <Help close={this.update} /> : <Blackjack {...this.state} play={this.playGame} newCard={this.pushCard} error={this.handleError} shuffle={this.shuffleCards} stand={this.stand} updateTurn={updateTurn} />}
+                    <section aria-labelledby="quick-links-title" className=" h-screen lg:flex-1 mt-4 rounded-lg bg-white dark:bg-gray-800 lg:overflow-scroll  shadow scrollbar-hide p-4">
+                      {this.state.active === 'settings' ? <Settings {...this.state} updateProfile={this.updateUser} clear={this.clearSession} reset={() => this.setState({ modal: true })} close={() => this.setState({ active: 'blackjack' })} /> :
+                        this.state.active === 'help' ? <Help close={this.update} /> : <Blackjack {...this.state} play={this.playGame} newCard={this.pushCard} error={this.handleError} shuffle={this.shuffleCards} stand={this.stand} updateTurn={updateTurn} />}
                     </section>
                   </div>
                 </div>

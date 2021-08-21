@@ -1,7 +1,7 @@
 // Renders blackjack screen for main container on dashboard
 export default function Blackjack(props) {
   return (
-    <div className="w-full  h-full relative px-4 pt-4 pb-3 ">
+    <div className="w-full  h-full relative  ">
       {/* End of game screen - blurs background when active */}
       {props.new_player === true || (props.game_over && props.victor) ?
         <div className="w-full h-full z-10  absolute items-center justify-center flex animate-fade-in">
@@ -18,17 +18,17 @@ export default function Blackjack(props) {
         </div> : null}
       {/* Dealer cards container */}
       <div className={" h-full flex flex-col " + (props.game_over ? " filter blur-sm" : null)}>
-        <div name="dealer_card_container" className="lg:ml-48 ml-24 flex flex-1 lg:w-3/4 w-1/2  justify-center ">
+        <div name="dealer_card_container" className="lg:ml-48 ml-28 flex flex-1 lg:w-3/4 lg:px-0 px-7 justify-center ">
           {props.dealer ? props[props.turn === 'player' ? 'dealer_hidden' : 'dealer'].map((card) => {
-            return <img alt="card" className="object-contain animate-fade-in-right lg:-ml-48 -ml-24 " src={(props.dark ? "cards_dark/" : "cards/") + card.code + ".svg"}></img>
+            return <img alt="card" className="object-contain animate-fade-in-right lg:-ml-48 -ml-28  " src={(props.dark ? "cards_dark/" : "cards/") + card.code + ".svg"}></img>
           }) : null}
         </div>
         {/* Dealer score */}
         <h1 className=" p-2 text-center  text-2xl  mt-1 dark:text-gray-50 ">{props.turn === 'player' && props.player_hard > 0 && props.dealer_hard > 0 ? props.dealer_hidden_score : props.dealer_soft !== props.dealer_hard && props.dealer_soft < 21 ? (props.dealer_soft + ' / ' + props.dealer_hard) : props.dealer_soft === 21 ? props.dealer_soft : props.turn === 'dealer' ? props.dealer_hard : null}</h1>
         {/* Player cards container */}
-        <div name="player_card_container" className="flex-1 lg:ml-48   flex justify-center lg:w-3/4 max-w-full ">
+        <div name="player_card_container" className="lg:ml-48 ml-28 flex flex-1 lg:w-3/4 lg:px-0 px-7 justify-center ">
           {props.player ? props.player.map((card) => {
-            return <img alt="card" className=" animate-fade-in-right lg:-ml-48 " src={(props.dark ? "cards_dark/" : "cards/") + card.code + ".svg"}></img>
+            return <img alt="card" className="object-contain animate-fade-in-right lg:-ml-48 -ml-28 " src={(props.dark ? "cards_dark/" : "cards/") + card.code + ".svg"}></img>
           }) : null}
         </div>
         {/* Player score */}

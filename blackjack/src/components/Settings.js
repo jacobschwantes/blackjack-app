@@ -30,7 +30,7 @@ export default function Settings(props) {
     return classes.filter(Boolean).join(' ')
   };
   return (
-    <form className="p-6 relative h-full w-full" onSubmit={handleSubmit}>
+    <form className="p-2 relative h-full w-full" onSubmit={handleSubmit}>
       <div className="mb-8 animate-fade-in ">
         <div>
           <div>
@@ -132,13 +132,24 @@ export default function Settings(props) {
                 />
               </Switch>
             </Switch.Group>
-            <button
-              type="button"
-              onClick={() => props.reset()}
-              className=" bg-red-600 mt-1 py-2 px-3  rounded-md  text-sm font-medium leading-4 text-gray-50  focus:outline-none hover:bg-red-900"
-            >
-              Delete account
-            </button>
+            <div className="mb-1">
+              <button
+                type="button"
+                onClick={() => props.clear()}
+                className=" bg-red-600 mt-1 py-2 px-3  rounded-md  text-sm font-medium leading-4 text-gray-50  focus:outline-none hover:bg-red-900"
+              >
+                Clear session
+              </button>
+            </div>
+            <div>
+              <button
+                type="button"
+                onClick={() => props.reset()}
+                className=" bg-red-600 mt-1 py-2 px-3  rounded-md  text-sm font-medium leading-4 text-gray-50  focus:outline-none hover:bg-red-900"
+              >
+                Delete account
+              </button>
+            </div>
           </div>
         </div>
       </div>

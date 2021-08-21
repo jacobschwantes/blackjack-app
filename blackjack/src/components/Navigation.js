@@ -42,7 +42,7 @@ export default function Navigation(props) {
               <Menu.Item>
                 {({ active }) => (
                   <button
-                    onClick={() => props.update('help', true)}
+                    onClick={() => props.update('help')}
                     className={classNames(
                       active ? 'bg-gray-100 dark:bg-gray-700' : '',
                       'px-4 w-full text-left py-2 text-sm text-gray-700 dark:text-gray-50'
@@ -55,7 +55,7 @@ export default function Navigation(props) {
               <Menu.Item>
                 {({ active }) => (
                   <button
-                    onClick={() => props.update('settings', true)}
+                    onClick={() => props.update('settings')}
                     className={classNames(
                       active ? 'bg-gray-100 dark:bg-gray-700' : '',
                       'px-4 w-full text-left py-2 text-sm text-gray-700 dark:text-gray-50'
