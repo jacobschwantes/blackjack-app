@@ -420,8 +420,10 @@ export default class Dashboard extends Component {
         this.checkVictor()
       }
       else {
-        await this.pushCard('dealer');
-        setTimeout(() => { this.stand(); }, 1000)
+        await this.pushCard('dealer').then(
+          setTimeout(() => { this.stand(); }, 1500)
+        )
+        
       }
     }
   }

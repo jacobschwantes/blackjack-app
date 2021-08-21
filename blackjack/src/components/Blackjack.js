@@ -1,7 +1,7 @@
 // Renders blackjack screen for main container on dashboard
 export default function Blackjack(props) {
   return (
-    <div className="w-full h-full relative px-3 ">
+    <div className="w-full  h-full relative px-4 pt-4 pb-3 ">
       {/* End of game screen - blurs background when active */}
       {props.new_player === true || (props.game_over && props.victor) ?
         <div className="w-full h-full z-10  absolute items-center justify-center flex animate-fade-in">
@@ -17,25 +17,25 @@ export default function Blackjack(props) {
             </div></div>
         </div> : null}
       {/* Dealer cards container */}
-      <div className={" h-full flex flex-col w-full " + (props.game_over ? " filter blur-sm" : null)}>
-        <div name="dealer_card_container" className="mr-48  flex   justify-center ">
+      <div className={" h-full flex flex-col " + (props.game_over ? " filter blur-sm" : null)}>
+        <div name="dealer_card_container" className="lg:ml-48 ml-24 flex flex-1 lg:w-3/4 w-1/2  justify-center ">
           {props.dealer ? props[props.turn === 'player' ? 'dealer_hidden' : 'dealer'].map((card) => {
-            return <img alt="card" className="object-contain animate-fade-in-right -mr-48 " src={(props.dark ? "cards_dark/" : "cards/") + card.code + ".svg"}></img>
+            return <img alt="card" className="object-contain animate-fade-in-right lg:-ml-48 -ml-24 " src={(props.dark ? "cards_dark/" : "cards/") + card.code + ".svg"}></img>
           }) : null}
         </div>
         {/* Dealer score */}
-        <h1 className="mx-2 text-center  text-xl mt-1 dark:text-gray-50 ">{props.turn === 'player' && props.player_hard > 0 && props.dealer_hard > 0 ? props.dealer_hidden_score : props.dealer_soft !== props.dealer_hard && props.dealer_soft < 21 ? (props.dealer_soft + ' / ' + props.dealer_hard) : props.dealer_soft === 21 ? props.dealer_soft : props.turn === 'dealer' ? props.dealer_hard : null}</h1>
+        <h1 className=" p-2 text-center  text-2xl  mt-1 dark:text-gray-50 ">{props.turn === 'player' && props.player_hard > 0 && props.dealer_hard > 0 ? props.dealer_hidden_score : props.dealer_soft !== props.dealer_hard && props.dealer_soft < 21 ? (props.dealer_soft + ' / ' + props.dealer_hard) : props.dealer_soft === 21 ? props.dealer_soft : props.turn === 'dealer' ? props.dealer_hard : null}</h1>
         {/* Player cards container */}
-        <div name="player_card_container" className=" mr-48 flex justify-center   ">
+        <div name="player_card_container" className="flex-1 lg:ml-48   flex justify-center lg:w-3/4 max-w-full ">
           {props.player ? props.player.map((card) => {
-            return <img alt="card" className=" animate-fade-in-right -mr-48 " src={(props.dark ? "cards_dark/" : "cards/") + card.code + ".svg"}></img>
+            return <img alt="card" className=" animate-fade-in-right lg:-ml-48 " src={(props.dark ? "cards_dark/" : "cards/") + card.code + ".svg"}></img>
           }) : null}
         </div>
         {/* Player score */}
-        <h1 className="text-center text-xl pb-4 dark:text-gray-50 ">{props.player_hard === 0 ? null : (props.player_soft !== props.player_hard && props.player_soft < 21 ? (props.player_soft + ' / ' + props.player_hard) : props.player_soft === 21 ? props.player_soft : props.player_hard)}</h1>
+        <h1 className="text-center text-2xl p-2  dark:text-gray-50 ">{props.player_hard === 0 ? null : (props.player_soft !== props.player_hard && props.player_soft < 21 ? (props.player_soft + ' / ' + props.player_hard) : props.player_soft === 21 ? props.player_soft : props.player_hard)}</h1>
         {/* Hit / stand button group */}
        
-          <div className="flex  w-full absolute bottom-2">
+          <div className="flex  w-full pb-2">
             <button disabled={props.game_over || props.turn === 'dealer' || props.player_bust || props.player_hard > 21 || props.dealing} className="inline-flex flex-grow justify-center py-2 mx-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-cyan-600 hover:bg-cyan-700 focus:outline-none focus:ring-2  focus:ring-cyan-500" onClick={() => props.newCard('player')}>Hit</button>
             <button disabled={props.game_over || props.turn === 'dealer' || props.player_bust} className="inline-flex flex-grow justify-center py-2 mx-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-cyan-600 hover:bg-cyan-700 focus:outline-none focus:ring-2  focus:ring-cyan-500" onClick={() => { props.updateTurn(props.user.uid, 'dealer'); setTimeout(() => { props.stand() }, 1000) }}>Stand</button>
           
