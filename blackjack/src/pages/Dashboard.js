@@ -579,15 +579,15 @@ export default class Dashboard extends Component {
             )}
           </Popover>
           <main className="-mt-24 lg:h-screen  min-h-screen">
-            <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:max-w-7xl lg:px-8 h-full">
+            <div className="max-w-3xl mx-auto px-0 sm:px-6 lg:max-w-7xl lg:px-8 h-full">
               {/* Main 3 column grid */}
-              <div className={"h-full lg:mt-0 mt-14 grid grid-cols-1 gap-1 items-start lg:gap-5 " + (this.state.chat_enabled ? "lg:grid-cols-3" : "lg:grid-cols-1")}>
+              <div className={"h-full lg:mt-0 sm:mt-14 grid grid-cols-1 gap-1 items-start lg:gap-5 " + (this.state.chat_enabled ? "lg:grid-cols-3" : "lg:grid-cols-1")}>
                 {/* Left column */}
                 <div className={"grid grid-cols-1 lg:col-span-2 lg:h-screen " + (this.state.chat_enabled ? "lg:col-span-2" : "lg:col-span-1")}>
                   <div className="flex flex-col lg:h-screen">
                     {/* Welcome panel */}
                     <section aria-labelledby="profile-overview-title " >
-                      <div className="rounded-lg bg-white dark:bg-gray-900 overflow-hidden shadow">
+                      <div className="sm:rounded-lg bg-white dark:bg-gray-900 overflow-hidden shadow">
                         <h2 className="sr-only" id="profile-overview-title">
                           Profile Overview
                         </h2>
@@ -609,7 +609,7 @@ export default class Dashboard extends Component {
                       </div>
                     </section>
                     {/* main container */}
-                    <section aria-labelledby="quick-links-title" className=" h-screen lg:flex-1 mt-4 rounded-lg bg-white dark:bg-gray-800 lg:overflow-scroll  shadow scrollbar-hide p-4">
+                    <section aria-labelledby="quick-links-title" className=" h-screen lg:flex-1 mt-4 sm:rounded-lg bg-white dark:bg-gray-800 lg:overflow-scroll  shadow scrollbar-hide p-4">
                       {this.state.active === 'settings' ? <Settings {...this.state} updateProfile={this.updateUser} clear={this.clearSession} reset={() => this.setState({ modal: true })} close={() => this.setState({ active: 'blackjack' })} /> :
                         this.state.active === 'help' ? <Help close={this.update} /> : <Blackjack {...this.state} play={this.playGame} newCard={this.pushCard} error={this.handleError} shuffle={this.shuffleCards} stand={this.stand} updateTurn={updateTurn} />}
                     </section>

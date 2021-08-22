@@ -88,7 +88,7 @@ export default class Chat extends Component {
   }
   render() {
     return (
-      <div className={"rounded-lg bg-white dark:bg-gray-800 overflow-hidden shadow  p-6 h-full flex flex-col"}>
+      <div className={"sm:rounded-lg bg-white dark:bg-gray-800 overflow-hidden shadow  p-6 h-full flex flex-col"}>
         <h2 className="text-base font-medium text-gray-900 dark:text-gray-50" id="announcements-title">
           Chat
         </h2>
