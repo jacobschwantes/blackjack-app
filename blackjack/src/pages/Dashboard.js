@@ -7,7 +7,6 @@ import Blackjack from "../components/Blackjack";
 import { checkDeck, drawCards, shuffleDeck } from "../helpers/api";
 import Notification from "../components/Notification";
 import Settings from "../components/Settings";
-import Help from "../components/Help";
 import {
   MenuIcon,
   XIcon,
@@ -546,13 +545,6 @@ export default class Dashboard extends Component {
                               </Popover.Button>
                             </div>
                             <div className="mt-3 px-2 space-y-1">
-                              <button
-                                key="help"
-                                onClick={() => this.update('help')}
-                                className="block rounded-md px-3 py-2 text-base text-gray-900 dark:text-gray-50 font-medium hover:bg-gray-100 hover:text-gray-800"
-                              >
-                                How to play
-                              </button>
 
                               <button
                                 key="settings"
@@ -611,7 +603,7 @@ export default class Dashboard extends Component {
                     {/* main container */}
                     <section aria-labelledby="quick-links-title" className=" h-screen lg:flex-1 mt-4 sm:rounded-lg bg-white dark:bg-gray-800 lg:overflow-scroll  shadow scrollbar-hide p-4">
                       {this.state.active === 'settings' ? <Settings {...this.state} updateProfile={this.updateUser} clear={this.clearSession} reset={() => this.setState({ modal: true })} close={() => this.setState({ active: 'blackjack' })} /> :
-                        this.state.active === 'help' ? <Help close={this.update} /> : <Blackjack {...this.state} play={this.playGame} newCard={this.pushCard} error={this.handleError} shuffle={this.shuffleCards} stand={this.stand} updateTurn={updateTurn} />}
+                         <Blackjack {...this.state} play={this.playGame} newCard={this.pushCard} error={this.handleError} shuffle={this.shuffleCards} stand={this.stand} updateTurn={updateTurn} />}
                     </section>
                   </div>
                 </div>
