@@ -324,7 +324,7 @@ export default class Dashboard extends Component {
         }
         else {
           // 3 bad requests in a row - usually lost internet connection
-          this.setState({ error: 'There was a problem with that request. Please try again later.' })
+          this.setState({ error: 'There was a problem with that request. Try clearing your session. Settings -> Clear session.' })
           this.setState({ notification: true })
         }
       }
@@ -457,6 +457,7 @@ export default class Dashboard extends Component {
   // clears users game - used for stuck game from api errors
   clearSession() {
     db.ref("users/session/" + this.state.user.uid + "/game").remove();
+    db.ref("users/session/" + this.state.user.uid + "/deck").remove();
     this.setState({active: 'blackjack'});
   }
 
@@ -468,7 +469,7 @@ export default class Dashboard extends Component {
   render() {
     return (
       <div className={this.state.dark ? "dark" : null}>
-        <div className=" bg-gray-50 dark:bg-gray-900" >
+        <div className=" bg-gray-50 dark:bg-gray-900 overflow-x-hidden scrollbar-hide overscroll-x-contain" >
           <Modal {...this.state} reset={this.removeUser} update={() => this.setState({ modal: false })} />
           <Popover as="header" className={" pb-24  " + (this.state.dark ? null : "bg-gradient-to-r from-sky-800 to-cyan-600")}>
             {({ open }) => (
@@ -478,7 +479,7 @@ export default class Dashboard extends Component {
                     {/* Logo */}
                     <div className="absolute left-0 py-1 top-0 flex-shrink-0 lg:static">
                       <a href="/">
-                        <h1 className="text-3xl tracking-tight font-extrabold sm:text-4xl md:text-4xl lg:text-5xl xl:text-5xl text-gray-50 xl:inline ">Blackjack</h1>
+                        <h1 className="text-3xl tracking-tight font-extrabold sm:text-4xl md:text-4xl lg:text-5xl xl:text-5xl text-gray-50  xl:inline ">Blackjack</h1>
                       </a>
                     </div>
                     {/* Right section on desktop */}
@@ -570,7 +571,7 @@ export default class Dashboard extends Component {
               </>
             )}
           </Popover>
-          <main className="-mt-24 lg:h-screen  min-h-screen">
+          <main className=" md:-mt-24 -mt-10 lg:h-screen  min-h-screen ">
             <div className="max-w-3xl mx-auto px-0 sm:px-6 lg:max-w-7xl lg:px-8 h-full">
               {/* Main 3 column grid */}
               <div className={"h-full lg:mt-0 sm:mt-14 grid grid-cols-1 gap-1 items-start lg:gap-5 " + (this.state.chat_enabled ? "lg:grid-cols-3" : "lg:grid-cols-1")}>
@@ -579,7 +580,7 @@ export default class Dashboard extends Component {
                   <div className="flex flex-col lg:h-screen">
                     {/* Welcome panel */}
                     <section aria-labelledby="profile-overview-title " >
-                      <div className="sm:rounded-lg bg-white dark:bg-gray-900 overflow-hidden shadow">
+                      <div className="sm:rounded-lg bg-white dark:bg-gray-900 overflow-hidden shadow ">
                         <h2 className="sr-only" id="profile-overview-title">
                           Profile Overview
                         </h2>
