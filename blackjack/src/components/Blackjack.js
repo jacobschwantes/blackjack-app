@@ -18,7 +18,7 @@ export default function Blackjack(props) {
         </div> : null}
       {/* Dealer cards container */}
       <div className={" h-full flex flex-col " + (props.game_over ? " filter blur-sm" : null)}>
-        <div name="dealer_card_container" className="lg:ml-48 ml-32 flex flex-1  w-3/4 lg:px-0 px-8 justify-center ">
+        <div name="dealer_card_container" className="lg:ml-48 ml-32 flex flex-1  lg:w-auto w-3/4 lg:px-0 px-8 justify-center ">
           {props.dealer ? props[props.turn === 'player' ? 'dealer_hidden' : 'dealer'].map((card) => {
             return <img alt="card" className="object-contain animate-fade-in-right lg:-ml-48 -ml-40 " src={(props.dark ? "cards_dark/" : "cards/") + card.code + ".svg"}></img>
           }) : null}
@@ -26,9 +26,9 @@ export default function Blackjack(props) {
         {/* Dealer score */}
         <h1 className=" p-2 text-center  text-2xl  mt-1 dark:text-gray-50 ">{props.turn === 'player' && props.player_hard > 0 && props.dealer_hard > 0 ? props.dealer_hidden_score : props.dealer_soft !== props.dealer_hard && props.dealer_soft < 21 ? (props.dealer_soft + ' / ' + props.dealer_hard) : props.dealer_soft === 21 ? props.dealer_soft : props.turn === 'dealer' ? props.dealer_hard : null}</h1>
         {/* Player cards container */}
-        <div name="player_card_container" className="lg:ml-48 ml-32 flex flex-1  w-3/4 lg:px-0 px-8 justify-center ">
+        <div name="player_card_container" className="lg:ml-48 ml-32 flex flex-1  lg:w-auto w-3/4 lg:px-0 px-8 justify-center ">
           {props.player ? props.player.map((card) => {
-            return <img alt="card" className="object-contain animate-fade-in-right lg:-ml-48 -ml-40 " src={(props.dark ? "cards_dark/" : "cards/") + card.code + ".svg"}></img>
+            return <img alt="card" className="object-contain animate-fade-in-right lg:-ml-48 -ml-40" src={(props.dark ? "cards_dark/" : "cards/") + card.code + ".svg"}></img>
           }) : null}
         </div>
         {/* Player score */}
